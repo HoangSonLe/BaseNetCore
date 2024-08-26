@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <_PublishTargetUrl>C:\Deloy\QLLC</_PublishTargetUrl>
+    <History>True|2024-08-25T14:12:05.5835265Z||;True|2024-08-25T20:57:51.8452334+07:00||;True|2024-08-25T20:55:48.4905982+07:00||;True|2024-08-25T20:29:57.1831355+07:00||;True|2024-08-13T23:40:38.0405419+07:00||;True|2024-08-13T22:21:51.8176906+07:00||;True|2024-07-31T19:25:41.7887935+07:00||;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+</Project>

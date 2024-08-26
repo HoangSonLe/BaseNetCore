@@ -1,0 +1,459 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="">
+
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/QLLC.Website.styles.css" asp-append-version="true" />
+    <link href="~/lib/fontawesome-free-6.5.2-web/css/all.min.css" rel="stylesheet" />
+    <script src="~/js/enum.js"></script>
+    @* jquery *@
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @* kendo *@
+    <script src="~/lib/kendo/js/jquery.min.js"></script>
+    <script src="~/lib/kendo/js/jszip.min.js"></script>
+    <script src="~/lib/kendo/js/kendo.all.min.js"></script>
+    <script src="~/js/moment.min.js"></script>
+    @*  <link href="~/lib/kendo/styles/kendo.common.min.css" rel="stylesheet">
+    <link href="~/lib/kendo/styles/kendo.default.mobile.min.css" rel="stylesheet"> *@
+
+    <link href="~/lib/kendo/styles/kendo.common-bootstrap.min.css" rel="stylesheet" />
+    <link href="~/lib/kendo/styles/kendo.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/lib/kendo/styles/kendo.bootstrap.mobile.min.css" rel="stylesheet" />
+
+    <script src="~/lib/kendo/js/messages/kendo.messages.vi-VN.min.js"></script>
+    <script src="~/lib/kendo/js/cultures/kendo.culture.vi-VN.min.js"></script>
+    <script src="~/js/login/changepassword.js"></script>
+    <script src="~/js/permission/index.js"></script>
+    <script>
+        kendo.culture("vi-VN");
+    </script>
+    <script src="~/js/site.js"></script>
+
+    <script>
+        const isMobile = {
+            Android: function () {
+                return navigator.userAgent.match(/Android/i);
+            },
+            BlackBerry: function () {
+                return navigator.userAgent.match(/BlackBerry/i);
+            },
+            iOS: function () {
+                return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+            },
+            Opera: function () {
+                return navigator.userAgent.match(/Opera Mini/i);
+            },
+            Windows: function () {
+                return navigator.userAgent.match(/IEMobile/i) || navigator.userAgent.match(/WPDesktop/i);
+            },
+            any: function () {
+                return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+            }
+        };
+
+        var _isMobile = (isMobile.any() != null ? true : false);
+        var Userdata;
+    </script>
+
+    <style>
+        ul {
+            /* list-style-type: none; */
+            text-align: justify;
+        }
+        .k-grid table{
+            width:100% !important;
+        }
+
+        /* Notifications */
+        .k-notification h3 {
+            padding: 30px 10px 5px;
+            font-size: 1em;
+            line-height: normal;
+        }
+
+        .k-notification img {
+            margin: 20px;
+            float: left;
+        }
+
+        .k-notification{
+            margin-bottom: 8px;
+        }
+
+        /* Info template */
+        .wrong-temp {
+            background-color: #c1570b;
+            color: black;
+            min-width: 300px;
+            max-width: 400px;
+            min-height: 100px;
+        }
+
+        /* Error template */
+        .wrong-pass {
+            background-color: #ba4e4e;
+            color: black;
+            min-width: 300px;
+            max-width: 400px;
+            min-height: 100px;
+        }
+
+        /* Success template */
+        .upload-success {
+            background-color: #3bb23b;
+            min-width: 300px;
+            max-width: 400px;
+            min-height: 100px;
+        }
+
+        .customClass {
+            z-index: 999999 !important;
+        }
+    </style>
+</head>
+<body class=" nav-fixed">
+    @* <header> *@
+    <nav class="topnav navbar navbar-expand shadow justify-content-between justify-content-sm-start navbar-light bg-white ps-0 pe-0 py-0" style="box-shadow:none;background: transparent linear-gradient(90deg, #0E8C95 0%, #03CCDB 100%) 0% 0% no-repeat padding-box;"
+         id="sidenavAccordion">
+        <button class="btn btn-icon btn-transparent-dark order-0 order-lg-0 me-0 ms-0"
+                id="sidebarToggle">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 width="24"
+                 height="24"
+                 viewbox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2"
+                 stroke-linecap="round"
+                 stroke-linejoin="round"
+                 class="feather feather-menu">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+
+        <div class="navbar-brand ps-0 ms-sm-0 text-decoration-none" style="flex: 1;" >
+            <a class="d-flex align-items-center text-decoration-none" style="width: 184px;" href="/">
+                <img src="" style="height: 44px;">
+                <span id="titleHeader" class="text-primary text-decoration-none" style="font-size: 18px;color:white !important; margin: 0; padding-left: 10px;">My web</span>
+            </a>
+        </div>
+
+
+        <!-- Navbar Items-->
+        <ul class="navbar-nav align-items-center ms-auto">
+            <!-- User Dropdown-->
+            <li class="nav-item dropdown no-caret dropdown-user ">
+                <a class="btn btn-icon btn-transparent-dark dropdown-toggle"
+                   id="navbarDropdownUserImage"
+                   href="javascript:void(0);"
+                   role="button"
+                   data-bs-toggle="dropdown"
+                   aria-haspopup="true"
+                   aria-expanded="false">
+                    <i class="fa-solid fa-user fa-1_5x"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end border-0 shadow animated--fade-in-up"
+                     aria-labelledby="navbarDropdownUserImage">
+                    <h6 class="dropdown-header d-flex align-items-center justify-content-between" style="">
+                        <div class="d-flex w-75  align-items-center ">
+                            <i class="fa-solid fa-user fa-1_5x me-2"></i>
+                            <div class="dropdown-user-details ">
+                                <div class="dropdown-user-details-name" title="Username" id="pnAccount">Chào Username !</div>
+                                @* <div class="dropdown-user-details-email">vluna@aol.com</div> *@
+                            </div>
+
+                        </div>
+                        @* <div id="div_user_QRcode" class="ms-2" style="cursor: pointer;">
+                            <i class="fa fa-qrcode fa-2x text-primary"></i>
+                        </div> *@
+                    </h6>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item change-password" runat="server" href="#">
+                        <div class="dropdown-item-icon">
+                            <i class="fa-solid fa-gear"></i>
+                        </div>
+                        Đổi mật khẩu
+                    </button>
+                    <div id="ChangePassword" style="display:none;">
+                        <form id="FormChangePassword"></form>
+                    </div>
+                    <a class="dropdown-item logout_btn" href="/Account/Logout" style="color:black;">
+                        <div class="dropdown-item-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 width="24"
+                                 height="24"
+                                 viewbox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="2"
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round"
+                                 class="feather feather-log-out">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                        </div>
+                        Đăng xuất
+                    </a>
+                </div>
+            </li>
+        </ul>
+    </nav>
+
+    @* </header> *@
+
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sidenav shadow-right sidenav-light" style="background: transparent linear-gradient(180deg, #148F96 0%, #1C4485 100%) 0% 0% no-repeat padding-box;">
+                <div class="sidenav-menu" style="border-right: 1px solid var(--bs-color-global-gray40);">
+                    <div class="nav accordion px-2" id="accordionSidenav">
+
+
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <div id="layoutSidenav_content">
+            <main style="width: 100%;height: 100%;" role="main" class="pb-3">
+                <div class="container-fluid  px-4 mt-4">
+                    @RenderBody()
+
+                </div>
+                <span id="notification" style="display:none;"></span>
+            </main>
+            <footer class="border-top footer text-center text-muted">
+                <div class="container">
+                    &copy;
+                </div>
+            </footer>
+        </div>
+    </div>
+    <div id="loadingIndicator" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.8);opacity:0.5; z-index: 99999;">
+        <div class="k-loading-image" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
+        <div class="k-loading-color"></div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade " id="QRcode_Popup" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Quét QR Code Telegram để nhận thông báo!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img alt="QR Code" class="imgQR" src="" />
+                </div>
+                <div class="modal-footer" style="color:red;font-size:15px;">Lưu ý: cần dùng tài khoản telegram theo số điện thoại đã đăng ký!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script id="wrongTemplate" type="text/x-kendo-template">
+        <div class="wrong-temp">
+            <div class="d-flex flex-column">
+                <div>
+                    <img src="../content/images/notification/error-icon.png" />
+                    <h3>#= title #</h3>
+                </div>
+                <div class="px-2">
+                    <p style="word-wrap: break-word;white-space: -moz-pre-wrap;white-space: pre-wrap;text-indent: 10px;">#= message #</p>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script id="errorTemplate" type="text/x-kendo-template">
+        <div class="wrong-pass">
+            <div class="d-flex flex-column">
+                <div>
+                    <img src="../content/images/notification/error-icon.png" />
+                    <h3>#= title #</h3>
+                </div>
+                <div class="px-2">
+                    <p style="word-wrap: break-word;white-space: -moz-pre-wrap;white-space: pre-wrap;text-indent: 10px;">#= message #</p>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script id="successTemplate" type="text/x-kendo-template">
+        <div class="upload-success">
+            <div class="d-flex flex-column">
+                <div>
+                    <img src="../content/images/notification/success-icon.png" />
+                    <h3>#= title #</h3>
+                </div>
+                <div class="px-2">
+                    <p style="word-wrap: break-word;white-space: -moz-pre-wrap;white-space: pre-wrap;text-indent: 10px;">#= message #</p>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/css/scriptss.js"></script>
+
+    <script src="~/js/kendogridresize/notification.js"></script>
+
+    <script src="~/js/kendogridresize/resize.js"></script>
+    <script src="~/js/notificationforuser/index.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        function menu(EnumRoleList) {
+            if (!EnumRoleList) return;
+            let html = "";
+            if (EnumRoleList.find(e => e == 11 || e == 7)) {
+                html += ` <a id="category_" class="nav-link my-1 collapsed" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#menu-category" aria-expanded="false" aria-controls="menu-category">
+                                            <div class="nav-link-icon"><i class="fa-solid fa-bars-staggered fa-1_5x me-2"></i></div>
+                                            Danh mục
+                                            <div class="sidenav-collapse-arrow">
+                                                <i class="fas fa-angle-down"></i>
+                                            </div>
+                                        </a>`;
+                html += `
+                        <div class="nav collapse" id="menu-category" data-bs-parent="#accordionSidenav">
+                             <nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPages">`;
+                if (EnumRoleList.find(e => e == 7)){
+                    html += `<a class="nav-link _permission_" data-enum="7" href="/User">Người dùng</a>`;
+                }
+                if (EnumRoleList.find(e => e == 11)){
+                    html += `<a class="nav-link _permission_" data-enum="11" href="/Tenants">Chùa</a>`;
+                }
+                html += `</nav>
+                                        </div>`;
+            }
+
+            if (EnumRoleList.find(e => e == 3)){
+                html += `<a class="nav-link my-1 _permission_" data-enum="3" href="/Urn">
+                            <i class="fa-solid fa-bars-progress fa-1_5x me-2"></i>
+                            Quản lý linh cốt
+                        </a>`;
+            }
+            if (EnumRoleList.find(e => e == 17)){
+                html += `<a class="nav-link  my-1 _permission_" data-enum="17" href="/StorageMap">
+                            <i class="fa-solid fa-diagram-project fa-1_5x me-2"></i>
+                            Sơ đồ lưu trữ
+                        </a>`;
+            }
+            if (EnumRoleList.find(e => e == 21)){
+                html += `<a class="nav-link  my-1 _permission_" data-enum="21" href="/Reminder">
+                            <i class="fa-regular fa-note-sticky fa-1_5x me-2"></i>
+                            Nhắc nhở
+                        </a>`;
+            }
+            if (EnumRoleList.find(e => e == 14)){
+            html += `<a class="nav-link  my-1 _permission_" data-enum="14" href="/Configs">
+                        <i class="fa-solid fa-gear fa-1_5x me-2"></i>
+                        Cấu hình
+                    </a>`;
+            }
+    if (Userdata.roleIdList.find(e => e == ERoleType.Admin || e == ERoleType.Reporter || e == ERoleType.User)) {
+                html += `<div id="div_user_QRcode" style="cursor: pointer;" class="nav-link  my-1" data-enum="14" href="">
+                            <i class="fa fa-qrcode fa-1_5x me-2"></i> QR Telegram
+                         </div>`;
+            }
+
+            $("#accordionSidenav").html(html)
+
+            let pathname = window.location.pathname;
+            let element_ = $("a[href='" + pathname + "']");
+            if (pathname == "/User" || pathname == "/Tenants" ) {
+                $("#category_").addClass("active");
+                $("#menu-category").addClass("show");
+            }
+            // else
+            {
+                if (element_.length > 0) element_.addClass("active")
+            }
+        }
+        function removeColumnNotEditAndDelete(){
+
+            let pathname = window.location.pathname;
+            switch (pathname) {
+                case "/User": {
+                    if (!checkPermissionGroupExist(["8", "9"], Userdata.enumActionList)) {
+                        $("#gridId").data("kendoGrid").hideColumn(8);
+                    }
+                    break;
+                }
+                case "/Tenants": {
+
+                    if (!checkPermissionGroupExist(["12", "13"], Userdata.enumActionList)) {
+                        $("#tenantListGrid").data("kendoGrid").hideColumn(4);
+                    }
+                    break;
+                }
+                case "/Urn": {
+
+                    if (!checkPermissionGroupExist(["4", "5"], Userdata.enumActionList) && !(Userdata.roleIdList.includes(ERoleType.User) && _isMobile)) {
+                        $("#gridId").data("kendoGrid").hideColumn(8);
+                    }
+                    break;
+                }
+                case "/StorageMap": {
+
+                    if (!checkPermissionGroupExist(["18", "19"], Userdata.enumActionList)) {
+                        $("#gridId").data("kendoGrid").hideColumn(5);
+                    }
+                    break;
+                }
+                case "/Reminder": {
+
+                    // if (!checkPermissionGroupExist(["1"], Userdata.enumActionList)) {
+                    //     $(gridId).data("kendoGrid").hideColumn(5);
+                    // }
+                    break;
+                }
+                case "/Configs": {
+
+                    if (!checkPermissionGroupExist(["15"], Userdata.enumActionList)) {
+                        $("#configListGrid").data("kendoGrid").hideColumn(6);
+                    }
+                    break;
+                }
+                default:
+                    return;
+            }
+        }
+
+
+        $(document).ready(function () {
+           
+            ajax("GET", "/User/Authentication", null, (response) => {
+                $("#pnAccount").text("Xin chào: " + response.data.name);
+                $("#titleHeader").text("An lạc cảnh " + response.data.tenantName);
+                Userdata = response.data;
+                menu(Userdata.enumActionList)
+                NotificationForUser.constructor();
+                CheckPermission()
+                removeColumnNotEditAndDelete()
+               
+                $("#div_user_QRcode").click(function (e) {
+                    e.preventDefault();
+                    ajax("GET", "/Home/QRCode", null, (res) => {
+                        $("#QRcode_Popup .modal-body img").prop("src", res.data);
+                        $("#QRcode_Popup").modal("show");
+                    }, null, false);
+                });
+
+            },
+                () => {
+                    location.href = 'Account/Logout';
+                }, false);
+        });
+    </script>
+</body>
+</html>

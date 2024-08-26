@@ -1,0 +1,547 @@
+﻿@{
+    ViewData["Title"] = "Người dùng";
+}
+
+<div>
+
+    <h4 class="demo-section wide title">@ViewData["Title"]</h4>
+    @*   <div class="demo-section wide title">
+    <h4 class="demo-section wide title">@ViewData["Title"]</h4>
+    <nav id="breadcrumb"></nav>
+    </div> *@
+    <div id="divContent">
+        <div id="gridId">
+        </div>
+    </div>
+    <div id="window"></div>
+    <div id="dialog"></div>
+</div>
+<script type="text/x-kendo-template" id="template_form_header">
+    <div style="width:100%">
+        <button id='create' class='k-button k-button-md k-rounded-md k-button-solid k-button-solid-base _permission_' data-enum='6' style='margin-right: 5px;'><span class='k-icon k-i-plus k-button-icon'></span><span class='k-button-text'>Thêm</span></button>
+    @*<button id='active' class='k-button k-button-md k-rounded-md k-button-solid k-button-solid-base' style='margin-right: 5px;'><span class='k-icon k-i-check k-button-icon'></span><span class='k-button-text'>Active</span></button>
+        <button id='importExcel' class='k-button k-button-md k-rounded-md k-button-solid k-button-solid-base' style='margin-right: 5px;'><span class='k-icon k-i-file-excel k-button-icon'></span><span class='k-button-text'>Import Excel</span></button>*@
+        <button id='exportExcel' class='k-button k-button-md k-rounded-md k-button-solid k-button-solid-base' style='position: absolute; right: 16px;'><span class='k-icon k-i-file-excel k-button-icon'></span><span class='k-button-text'>Export Excel</span></button>
+    </div>
+</script>
+<script type="text/javascript">
+    let gridId = "#gridId";
+    var genderDatasource = @Html.Raw(Json.Serialize(@ViewBag.GenderDatasource));
+    var roleDatasource = @Html.Raw(Json.Serialize(@ViewBag.RoleDatasource));
+    function renderCreateOrEditForm(isCreate = true, dataUser = {}) {
+        let myWindow = $("#window");
+        $("#window").html("<form id='formCreateAndEdit'></form>");
+
+        let formData = {
+            id: 0,
+            tenantId: 0,
+            name: "",
+            userName: "",
+            email:"",
+            password: null,
+            phone: null,
+            roleIdList:[],
+            ...dataUser
+        };
+        let strSubmit = "Thêm";
+        let title = "THÊM MỚI"
+        let element;
+        if (isCreate == false) {
+            strSubmit = "Sửa";
+            title = "CẬP NHẬT";
+        }
+        $("#formCreateAndEdit").kendoForm({
+            orientation: "vertical",
+            formData: formData,
+            type: "group",
+            items: [
+
+                {
+                    field: "name",
+                    title: "Họ tên",
+                    label: "Họ tên (*):",
+                    validation: {
+                        validationMessage: "Vui lòng nhập họ tên",
+                        required: true
+                    },
+                },
+                {
+                    field: "userName",
+                    title: "Tên đăng nhập",
+                    label: "Tên đăng nhập (*):",
+                    validation: {
+                        validationMessage: "Vui lòng nhập tên đăng nhập",
+                        required: true
+                    },
+                },
+                {
+                    field: "email",
+                    title: "Email",
+                    label: "Email:",
+                    validation: {
+                        email: true
+                    },
+                },
+                {
+                    field: "password",
+                    label: "Mật khẩu (*):",
+                    title: "Mật khẩu",
+                    validation: {
+                        validationMessage: "Vui lòng nhập mật khẩu",
+                        required: true
+                    },
+                },
+                {
+                    field: "phone",
+                    label: "Số điện thoại(*):",
+                    title: "Số điện thoại",
+                    validation: {
+                        validationMessage: "Vui lòng nhập số điện thoại",
+                        required: true
+                    }
+                },
+                {
+                    field: "roleIdList",
+                    editor: "MultiSelect",
+                    label: "Danh sách vai trò:",
+                    editorOptions: {
+                        optionLabel: "Chọn người vai trò",
+                        dataTextField: "text",
+                        dataValueField: "value",
+                        filter: "contains",
+                        dataSource: {
+                            type: "json",
+                            serverFiltering: true,
+                            transport: {
+                                read: {
+                                    url: "/Role/GetRoleDropdownList",
+                                    dataType: "json",
+                                    data: function () {
+                                        return {
+                                            searchString: $("#roleIdList").data("kendoMultiSelect").input.val(), // The search string
+                                        };
+                                    }
+                                }
+                            },
+                            schema: {
+                                type: 'json',
+                                data: "data",
+                            },
+
+                        }
+                    }
+                }
+            ],
+            messages: {
+                submit: strSubmit, clear: "Đặt lại"
+            },
+            submit: function (e) {
+                e.preventDefault();
+                let dataItem = {
+                    ...formData,
+                    ...e.model,
+                    roleIdList: $("#roleIdList").data("kendoMultiSelect").value(),
+                };
+                var response = ajax("POST", "/User/CreateOrUpdateUser", dataItem, () => {
+                    $(gridId).data("kendoGrid").dataSource.filter({});
+                    myWindow.data("kendoWindow").close();
+                });
+            },
+            close: function (e) {
+                $(this.element).empty();
+            },
+        });
+        if(!isCreate){
+            $("#password").closest("div").hide();
+            $("#password-form-label").closest("div").hide();
+        }
+        $('#password').on('keypress', function (event) {
+            if (event.which === 32) { // 32 is the ASCII code for space
+                event.preventDefault(); // Prevent the default action (space input)
+            }
+        });
+        if (Userdata.roleIdList?.includes(ERoleType.Admin) == false) {
+            $("#userName").data("kendoTextBox").enable(false);
+            $("#roleIdList").data("kendoMultiSelect").enable(false);
+        }
+        var multiSelect = $("#roleIdList").data("kendoMultiSelect");
+        // Apply debounce to the filter input
+        multiSelect.input.on("input", debounce(function () {
+            multiSelect.dataSource.filter({
+                logic: "or",
+                filters: [
+                    { field: multiSelect.options.dataTextField, operator: "contains", value: multiSelect.input.val() }
+                ]
+            });
+        }, debounceDelay));
+
+        setTimeout(() => {
+            $("input[title='name']").focus();
+        }, 500);
+
+        function remove() {
+            setTimeout(() => {
+                if ($(".k-window #window").length > 0) {
+                    $("#window").parent().remove();
+                    $(gridId).after("<div id='window'></div>");
+                }
+            }, 200)
+        }
+
+        myWindow.kendoWindow({
+            width: "500px",
+            // height: "50vh",
+            title: "",
+            visible: false,
+            actions: ["Close"],
+            resizable: false,
+            draggable: false,
+            modal: true,
+            close: function (e) {
+                //$("#window").empty();
+                remove();
+            },
+        }).data("kendoWindow").title(title).center();
+        myWindow.data("kendoWindow").open();
+    }
+
+    async function editUser(id) {
+        var response = ajax("GET", "/User/GetUserById", { userId: id }, (response) => {
+            renderCreateOrEditForm(false, response.data);
+        }, null, false);
+    }
+    function deleteUser(id) {
+        $('#dialog').kendoConfirm({
+            title: "THÔNG BÁO XÓA TÀI KHOẢN",
+            content: "Bạn có chắc chắn xóa người dùng này không?",
+            size: "medium",
+            messages: {
+                okText: "Đồng ý",
+                cancel: "Hủy"
+
+            },
+        }).data("kendoConfirm").open().result.done(function () {
+            var response = ajax("GET", "/User/DeleteUserById", {
+                userId: id
+            }, () => {
+                $(gridId).data("kendoGrid").dataSource.filter({});
+            });
+        })
+
+        $("#window").after("<div id='dialog'></div>");
+    }    
+    function resetPassword(id) {
+        $('#dialog').kendoConfirm({
+            title: "XÓA",
+            content: "Bạn có chắc chắn đặt lại mật khẩu cho tài khoản này không?",
+            messages: {
+                okText: "Đồng ý",
+                cancel: "Hủy"
+
+            },
+        }).data("kendoConfirm").open().result.done(function () {
+            var response = ajax("GET", "/User/ResetUserPasswordById", {
+                userId: id
+            }, () => {
+                $(gridId).data("kendoGrid").dataSource.filter({});
+            });
+        })
+
+        $("#window").after("<div id='dialog'></div>");
+    }
+
+    function ExportExcel() {
+        let dataSheet1 = [
+            {
+                cells: [
+                    {
+                        value: "Họ tên", textAlign: "center", background: "#428dd8"
+                    },
+                    {
+                        value: "Số điện thoại", textAlign: "center", background: "#428dd8"
+                    },
+                    {
+                        value: "Tên đăng nhập", textAlign: "center", background: "#428dd8"
+                    },
+                    {
+                        value: "Email", textAlign: "center", background: "#428dd8"
+                    },
+                    {
+                        value: "Ngày cập nhật", textAlign: "center", background: "#428dd8"
+                    },
+                    {
+                        value: "Vai trò", textAlign: "center", background: "#428dd8"
+                    },
+                ]
+            }];
+        let dataSourceUser = $(gridId).data("kendoGrid").dataSource.data();
+        for (let index = 0; index < dataSourceUser.length; index++) {
+            dataSheet1.push({
+                cells: [
+                    { value: dataSourceUser[index].name },
+                    { value: dataSourceUser[index].phone },
+                    { value: dataSourceUser[index].userName },
+                    { value: dataSourceUser[index].email },
+                    { value: kendo.toString(kendo.parseDate(dataSourceUser[index].updatedDate), "dd/MM/yyyy") },
+                    { value: dataSourceUser[index].roleViewList.map(i => i.description).join(",") },
+                ]
+            })
+        }
+
+
+        var workbook = new kendo.ooxml.Workbook({
+            sheets: [
+                {
+                    name: "Danh sách người dùng",
+                    columns: [
+                        { width: 200 }, { autoWidth: true }, { autoWidth: true },
+                        { autoWidth: true }, { autoWidth: true }, { autoWidth: true }
+                    ],
+                    rows: dataSheet1,
+                }
+            ]
+        });
+        kendo.saveAs({
+            dataURI: workbook.toDataURL(),
+            fileName: "Danh sách người dùng _ " + kendo.toString(new Date(), "dd_MM_yyyy__HH_mm_ss") + ".xlsx"
+        });
+    }
+
+    
+    function InitGrid() {
+        let htmlToolbar = `
+                <div id='toolbar' style=''  class='w-100 d-flex flex-column'>
+                       <div class="row gx-0 row-gap-2 w-100">
+                            <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12">
+                                <div class="pe-1">
+                                    <label for="searchString">Tìm kiếm:</label>
+                                    <input type="text" class=" w-100" id="searchString"/>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12">
+                                <div class="pe-1">
+                                    <label for="roleDropdownList">Vai trò:</label>
+                                    <input type="text" class=" w-100" id="roleDropdownList"/>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12 d-flex align-items-sm-end ">
+                                <div class="pe-1">
+                                    <button id="search" title="Tìm kiếm" class = "k-button k-button-md k-rounded-md k-button-solid k-button-solid-primary  k-icon-button"><span class='k-icon k-i-search k-button-icon'></span><span class='k-button-text d-none'>Tìm kiếm</span></button>
+                                    <button id='create' title="Thêm"  class='k-button k-button-md k-rounded-md k-button-solid k-button-solid-success _permission_' data-enum='16' ><span class='k-icon k-i-plus k-button-icon'></span><span class='k-button-text'>Thêm</span></button>
+                                </div>
+                            </div>
+                        </div>
+
+                            <div class="d-flex mt-2 flex-row w-100">
+                            <button id="exportExcel" class="k-button k-button-md k-rounded-md k-button-outline k-button-outline-error"><span class="k-icon k-i-file-excel k-button-icon"></span><span class="k-button-ext">Export Excel</span></button>
+                        </div>
+                </div>
+            `;
+
+        $(gridId).kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "/User/GetUserList",
+                        datatype: "json",
+                        type: "POST",
+                    },
+                    parameterMap: function (data, type) {
+                        if (type == "read") {
+                            let searchString = $("#searchString").val();
+                            let roleIdDomList = $("#roleDropdownList").data("kendoMultiSelect")?.value();
+                            let roleIdList = [];
+                            if (roleIdDomList){
+                                roleIdList = roleIdDomList.map(i => Number(i));
+                            }
+                            return {
+                                searchString,
+                                roleIdList,
+                                pageSize: data.pageSize,
+                                pageNumber: data.page
+                            }
+                        }
+
+                    },
+                },
+                serverPaging: true,
+                page: 1,
+                pageSize: 20,
+                schema: {
+                    type: 'json',
+                    parse: function (response) {
+                        if (response.isSuccess == false) {
+                            showErrorMessages(response.errorMessageList);
+                            return {
+                                data: [],
+                                total: 0
+                            }
+                        }
+                        return response.data;
+                    },
+                    data: "data",
+                    total: "total"
+                },
+            },
+            selectable: true,
+            pageable: {
+                pageSizes: [10, 20, 50],
+            },
+            dataBinding: function (e) {
+                record = (this.dataSource._page - 1) * this.dataSource._pageSize;
+            },
+            toolbar: htmlToolbar,
+            // toolbar: "<div id='toolbar' style='width:100%'></div><div class='report-toolbar'>\</div>",
+            columns: [
+                {
+                    field: "",
+                    title: "STT",
+                    headerAttributes: { style: "text-align: center; justify-content: center" },
+                    attributes: { style: "text-align:center;" },
+                    template: "#: ++record #",
+                    width: 100
+                },
+                {
+                    field: "name",
+                    title: "Họ tên",
+                    headerAttributes: { style: "text-align: center; justify-content: center" },
+                    attributes: { style: "text-align:center;" },
+                    width: 200,
+                },
+                {
+                    field: "phone",
+                    title: "Số điện thoại",
+                    width: 150,
+                    headerAttributes: { style: "text-align: center; justify-content: center" },
+                    attributes: { style: "text-align:center;" },
+                },
+                {
+                    field: "userName",
+                    title: "Tên đăng nhập",
+                    width: 250,
+                    headerAttributes: { style: "text-align: center; justify-content: center" },
+                    attributes: { style: "text-align:center;" },
+                },
+                {
+                    field: "email",
+                    title: "Email",
+                    width: 200,
+                    headerAttributes: { style: "text-align: center; justify-content: center" },
+                    attributes: { style: "text-align:center;" },
+                },
+                {
+                    field: "updatedDate",
+                    title: "Ngày cập nhật",
+                    width: 200,
+                    headerAttributes: { style: "text-align: center; justify-content: center" },
+                    attributes: { style: "text-align:center;" },
+                    template: '#: kendo.toString(kendo.parseDate(updatedDate), "dd/MM/yyyy HH:mm:ss")#',
+                },
+                {
+                    field: "updatedByName",
+                    title: "Người cập nhật",
+                    width: 150,
+                    headerAttributes: { style: "text-align: center; justify-content: center" },
+                    attributes: { style: "text-align:center;" },
+                },
+                {
+                    field: "RoleNameList",
+                    title: "Vai trò",
+                    headerAttributes: { style: "text-align: center; justify-content: center" },
+                    attributes: { style: "text-align:center;" },
+                    width: 120,
+                    template: function (data) {
+                        var html = "";
+                        for (let i = 0; i < data.roleViewList.length; i++) {
+                            html += `<li>${data.roleViewList[i].description}</li>`;
+                        }
+                        return `<ul>${html}</ul>`
+                    },
+
+                },
+             
+                {
+                    field: "", title: "Thao tác", width: 200, attributes: { style: "text-align: center;" },
+                    headerAttributes: { style: "text-align: center; justify-content: center" },
+                    template: "<button style='margin-right:5px;' onclick=editUser(#=id#) title='Chỉnh sửa' class='k-button k-button-md k-rounded-md k-button-solid-warning _permission_' data-enum='8'><span class='k-icon k-i-track-changes k-button-icon'></span></button>\
+                                                               <button style='margin-right:5px;' onclick=deleteUser(#=id#) title='Xoá' class='k-button k-button-md k-rounded-md k-button-solid-error _permission_' data-enum='9'><span class='k-icon k-i-trash k-button-icon'></span></button>\
+                                                               <button onclick=resetPassword(#=id#) title='Reset mật khẩu' class='k-button k-button-md k-rounded-md k-button-solid-primary _permission_' data-enum='8'><span class='k-icon k-i-lock k-button-icon'></span></button>",
+                }
+            ],
+            dataBound: function (e) {
+                CheckPermission();
+            }
+        });
+
+
+    }
+    function InitKendoToolBar() {
+        // $("#toolbar").kendoToolBar({
+        //     items: [
+        //         { template: "<label for='searchLabel'>Tìm kiếm:</label>" },
+        //         { template: '<input id="searchString" style="width:100%" />' },
+        //         { template: "<label for='roleLabel'>Vai trò:</label>" },
+        //         { template: '<input id="roleDropdownList" style="width:100%" />' },
+        //         { template: '<button id="search" class="k-button k-button-md k-rounded-md k-button-solid k-button-solid-primary me-2 k-button-solid-base k-icon-button"></button>' },
+        //         {
+        //             template: '<div class="buttonContainer">\
+        //                     <button id="exportExcel" class="k-button k-button-md k-rounded-md k-button-outline k-button-outline-error"><span class="k-icon k-i-file-excel k-button-icon"></span><span class="k-button-ext">Export Excel</span></button>\
+        //                         <button id="create" style="margin-left:5px;" class="k-button k-button-md k-rounded-md k-button-solid k-button-solid-success me-2 _permission_" data-enum="6"><span class="k-icon k-i-plus k-button-icon" > </span><span class="k-button-text">Thêm</span ></button></div>' },
+
+        //     ]
+        // });
+
+        $("#search").kendoButton({
+            icon: "search"
+        });
+        $("#search").click(async function (e) {
+            var grid = $(gridId).data("kendoGrid");
+            grid.dataSource.page(1);
+            grid.dataSource.filter({});
+        });
+        $("#exportExcel").click(async function (e) {
+            ExportExcel();
+        });
+        $("#searchString").kendoTextBox({
+            icon: {
+                type: "search",
+                position: "end"  // Có thể là "start" hoặc "end"
+            },
+            placeholder: "Nhập từ khóa tìm kiếm..."
+        });
+        $("#roleDropdownList").kendoMultiSelect({
+            dataTextField: "text",
+            dataValueField: "value",
+            optionLabel: 'Lọc vai trò...',
+            dataSource: roleDatasource,
+        });
+        $("#create").kendoButton({
+            icon: "plus"
+        });
+
+        $("#export").click(async function (e) {
+            let grid = $(gridId).data("kendoGrid");
+            grid.saveAsExcel();
+        });
+
+
+        $("#create").on('click', function () {
+            renderCreateOrEditForm();
+        });
+
+    };
+
+</script>
+<script type="text/javascript">
+    InitGrid();
+    InitKendoToolBar();
+    $(document).ready(function () {
+        $(window).trigger("resize");
+
+    });
+</script>
+<style>
+    .k-form-buttons {
+        justify-content: flex-end;
+    }
+</style>

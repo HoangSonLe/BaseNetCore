@@ -1,0 +1,64 @@
+/*********** This is CSS For small screen
+************************/
+
+@media (min-width: 1450px) {
+	.container {
+		width: 1440px;
+	}
+}
+
+@media (max-width: 1024px) {
+	.form-links,
+	.forgotten_link {
+		display: block;
+		float: none !important;
+		text-align: center !important;
+	}
+
+	.site-title {
+		font-size: 24px;
+	}
+
+	.top-content {
+		padding-bottom: 70px;
+	}
+}
+
+
+@media (max-width: 768px) {
+	.container>.navbar-header,
+	.navbar-nav {
+		margin: 0;
+		text-align: center;
+	}
+	
+	.navbar-default .navbar-brand {
+		float: none;
+	}
+	.navbar-brand>img {
+		display: inline-block;
+	}
+
+	.site-title {
+		padding-top: 15px;
+		line-height: 1.5;
+	}
+
+	.row-no-margin {
+		margin: 0;
+	}
+
+	.web-lienket {
+		margin-bottom: 30px;
+	}
+}
+
+@media (max-width: 480px) {
+	.login-form {
+		width: 80%;
+		height: 70%;
+	}
+	.insertImage{
+		display:none;
+	}
+}

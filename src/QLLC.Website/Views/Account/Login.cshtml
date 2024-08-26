@@ -1,0 +1,279 @@
+﻿@{
+    ViewBag.Title = "Đăng nhập";
+    Layout = null;
+    int numOfLoginFailed = 1;
+    int.TryParse(ViewBag.NumOfLoginFailed.ToString(), out numOfLoginFailed);
+    var UIConfig = ViewBag.UIConfig;
+    bool isLock = (bool)ViewBag.IsLock;
+
+}
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/x-icon" href="">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Đăng nhập</title>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @* <script src="~/js/jquery-ui.min.js"></script> *@
+    <!-- Bootstrap core CSS -->
+    <link href="/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+
+    <link href="~/lib/kendo/styles/kendo.common.min.css" rel="stylesheet">
+    <link href="~/lib/kendo/styles/kendo.rtl.min.css" rel="stylesheet">
+    <link href="~/lib/kendo/styles/c3n.css" rel="stylesheet">
+    <link href="~/lib/kendo/styles/kendo.default.mobile.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <script src="~/lib/kendo/js/kendo.all.min.js"></script>
+    <link href="~/css/login/main.css" rel="stylesheet">
+    <link href="~/css/login/responsive.css" rel="stylesheet">
+    <script src="~/js/login/custom.js"></script>
+    <script type="text/javascript">
+
+        const isMobile = {
+            Android: function () {
+                return navigator.userAgent.match(/Android/i);
+            },
+            BlackBerry: function () {
+                return navigator.userAgent.match(/BlackBerry/i);
+            },
+            iOS: function () {
+                return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+            },
+            Opera: function () {
+                return navigator.userAgent.match(/Opera Mini/i);
+            },
+            Windows: function () {
+                return navigator.userAgent.match(/IEMobile/i) || navigator.userAgent.match(/WPDesktop/i);
+            },
+            any: function () {
+                return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+            }
+        };
+
+    </script>
+
+    <style>
+        /* Notifications */
+        .k-notification {
+            padding: 0px !important;
+        }
+
+            .k-notification h3 {
+                padding: 10px 30px 10px 5px;
+                font-size: 1em;
+                line-height: normal;
+            }
+
+            .k-notification img {
+                margin: 0px 20px 20px 20px;
+                float: left;
+            }
+
+        /* Info template */
+        .wrong-temp {
+            width: 300px;
+            height: 100px;
+        }
+
+        /* Error template */
+        .wrong-pass {
+            width: 300px;
+            height: 100px;
+        }
+
+        /* Success template */
+        .upload-success {
+            width: 300px;
+            height: 100px;
+            display: flex;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top menu -->
+    <header style="background-image: linear-gradient(#ffffff, #ffbc00); display:none;">
+        <!-- Fixed navbar -->
+        <nav class="navbar navbar-default">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header main-logo">
+                    @* <a class="navbar-brand" href="#"><img src="/content/images/logo.png" alt="Cat Lai logo" style="width:100px"></a> *@
+                </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+
+                <ul class="nav navbar-nav navbar-right" style="list-style: none;">
+                    <li class="site-title">Login</li>
+                </ul>
+
+            </div><!-- /.container -->
+        </nav>
+    </header>
+    <!-- Begin page content -->
+    <div class="top-content" style=" height: 100vh;">
+
+
+
+        <div class="inner-bg">
+            <div class="container">
+                <div class="row row-no-margin">
+                    <div class="empty">
+                    </div>
+                    <div class="col-sm-5 col-md-3 col-4 form-box wow login-form pull-right" style="
+                            backdrop-filter:blur(5px);background-color: rgba(255, 255, 255, 0.6);align-items: center;
+                                display: flex;
+                                flex-direction: column;
+                                justify-content: center;">
+
+                        <div class="form-top">
+                            <div class="form-top-left" style="width: 100%; text-align: center;">
+                                <img src="" style="height: 44px;">
+                                <h3 style="margin: 0; padding: 10px 0;">AN LẠC CẢNH</h3>
+                            </div>
+                            <div class="form-top-right">
+                                <span aria-hidden="true" class="typcn typcn-pencil"></span>
+                            </div>
+                        </div>
+                        <div class="form-bottom w-sm-75 w-xs-75 w-100">
+                            @if (isLock)
+                            {
+                                <div class="validation-summary-warning">
+                                    <ul>
+                                        <li>Tài khoản <b>@ViewBag.UserNameLoginFailed</b> đã bị khóa vì đăng nhập sai quá @ViewBag.MaxNumOfLoginFailed lần. Vui lòng liên hệ phòng IT để được trợ giúp</li>
+                                    </ul>
+                                </div>
+                            }
+
+                        </div>
+
+                        <div class="insertImage" style="position: absolute;bottom:0px;left: -300px;">
+                            <svg width="439" height="274" viewBox="0 0 439 274" fill="none" xmlns="http://www.w3.org/2000/svg"> <g opacity="0.4"> <path d="M215.509 331.136C172.64 331.136 137.89 296.365 137.89 253.472V88.5208C137.89 45.6274 172.64 10.8574 215.509 10.8574C258.377 10.8574 293.127 45.6274 293.127 88.5208V253.472C293.127 296.365 258.377 331.136 215.509 331.136Z" stroke="url(#paint0_linear_15_1796)" stroke-width="7.29" stroke-miterlimit="10"></path> <path d="M215.509 23.1014C251.616 23.1014 280.89 52.3927 280.89 88.5208V253.472C280.89 289.6 251.616 318.891 215.509 318.891C179.401 318.891 150.127 289.6 150.127 253.472V88.5208C150.127 52.3927 179.401 23.1014 215.509 23.1014Z" stroke="url(#paint1_linear_15_1796)" stroke-width="7.29" stroke-miterlimit="10"></path> <path d="M215.508 35.3454C244.858 35.3454 268.653 59.1544 268.653 88.5208V253.472C268.653 282.838 244.858 306.647 215.508 306.647C186.159 306.647 162.364 282.838 162.364 253.472V88.5208C162.364 59.1544 186.159 35.3454 215.508 35.3454Z" stroke="url(#paint2_linear_15_1796)" stroke-width="7.29" stroke-miterlimit="10"></path> <path d="M215.509 47.593C238.097 47.593 256.413 65.9197 256.413 88.5208V253.472C256.413 276.073 238.097 294.4 215.509 294.4C192.92 294.4 174.604 276.073 174.604 253.472V88.5208C174.604 65.9197 192.92 47.593 215.509 47.593Z" stroke="url(#paint3_linear_15_1796)" stroke-width="7.29" stroke-miterlimit="10"></path> <path d="M215.509 59.837C231.339 59.837 244.176 72.6815 244.176 88.5208V253.472C244.176 269.311 231.339 282.156 215.509 282.156C199.678 282.156 186.841 269.311 186.841 253.472V88.5208C186.841 72.6815 199.678 59.837 215.509 59.837Z" stroke="url(#paint4_linear_15_1796)" stroke-width="7.29" stroke-miterlimit="10"></path> <path d="M215.508 72.0811C224.581 72.0811 231.939 79.4468 231.939 88.5208V253.472C231.939 262.55 224.577 269.912 215.508 269.912C206.436 269.912 199.078 262.546 199.078 253.472V88.5208C199.078 79.4432 206.44 72.0811 215.508 72.0811Z" stroke="url(#paint5_linear_15_1796)" stroke-width="7.29" stroke-miterlimit="10"></path> <path d="M103.822 430.192C53.5164 430.192 12.7335 389.386 12.7335 339.052V204.657C12.7335 154.323 53.5164 113.516 103.822 113.516C154.127 113.516 194.91 154.323 194.91 204.657V339.052C194.91 389.386 154.127 430.192 103.822 430.192Z" stroke="url(#paint6_linear_15_1796)" stroke-width="8.56" stroke-miterlimit="10"></path> <path d="M103.822 127.887C146.198 127.887 180.548 162.26 180.548 204.657V339.052C180.548 381.452 146.194 415.822 103.822 415.822C61.4458 415.822 27.0958 381.448 27.0958 339.052V204.657C27.0958 162.257 61.4494 127.887 103.822 127.887Z" stroke="url(#paint7_linear_15_1796)" stroke-width="8.56" stroke-miterlimit="10"></path> <path d="M103.822 142.257C138.265 142.257 166.189 170.198 166.189 204.66V339.055C166.189 373.518 138.265 401.458 103.822 401.458C69.3788 401.458 41.4544 373.518 41.4544 339.055V204.66C41.4544 170.198 69.3788 142.257 103.822 142.257Z" stroke="url(#paint8_linear_15_1796)" stroke-width="8.56" stroke-miterlimit="10"></path> <path d="M103.822 156.628C130.332 156.628 151.827 178.135 151.827 204.66V339.055C151.827 365.58 130.332 387.088 103.822 387.088C77.3118 387.088 55.8167 365.58 55.8167 339.055V204.66C55.8167 178.135 77.3118 156.628 103.822 156.628Z" stroke="url(#paint9_linear_15_1796)" stroke-width="8.56" stroke-miterlimit="10"></path> <path d="M103.822 170.995C122.399 170.995 137.465 186.069 137.465 204.657V339.052C137.465 357.639 122.399 372.714 103.822 372.714C85.2448 372.714 70.1789 357.639 70.1789 339.052V204.657C70.1789 186.069 85.2448 170.995 103.822 170.995Z" stroke="url(#paint10_linear_15_1796)" stroke-width="8.56" stroke-miterlimit="10"></path> <path d="M103.822 185.365C114.466 185.365 123.102 194.007 123.102 204.657V339.052C123.102 349.702 114.466 358.343 103.822 358.343C93.1778 358.343 84.5411 349.702 84.5411 339.052V204.657C84.5411 194.007 93.1778 185.365 103.822 185.365Z" stroke="url(#paint11_linear_15_1796)" stroke-width="8.56" stroke-miterlimit="10"></path> <path d="M323.211 445.589C279.61 445.589 244.262 410.224 244.262 366.595V250.114C244.262 206.488 279.607 171.12 323.211 171.12C366.812 171.12 402.16 206.485 402.16 250.114V366.595C402.16 410.221 366.816 445.589 323.211 445.589Z" stroke="url(#paint12_linear_15_1796)" stroke-width="8.26" stroke-miterlimit="10"></path> <path d="M323.211 183.578C359.938 183.578 389.711 213.369 389.711 250.117V366.598C389.711 403.346 359.938 433.136 323.211 433.136C286.484 433.136 256.711 403.346 256.711 366.598V250.117C256.711 213.369 286.484 183.578 323.211 183.578Z" stroke="url(#paint13_linear_15_1796)" stroke-width="8.26" stroke-miterlimit="10"></path> <path d="M323.211 196.035C353.061 196.035 377.266 220.25 377.266 250.121V366.602C377.266 396.469 353.064 420.687 323.211 420.687C293.361 420.687 269.156 396.472 269.156 366.602V250.121C269.156 220.254 293.358 196.035 323.211 196.035Z" stroke="url(#paint14_linear_15_1796)" stroke-width="8.26" stroke-miterlimit="10"></path> <path d="M323.211 208.487C346.187 208.487 364.817 227.128 364.817 250.117V366.598C364.817 389.587 346.187 408.228 323.211 408.228C300.235 408.228 281.605 389.587 281.605 366.598V250.117C281.605 227.128 300.235 208.487 323.211 208.487Z" stroke="url(#paint15_linear_15_1796)" stroke-width="8.26" stroke-miterlimit="10"></path> <path d="M323.211 220.943C339.313 220.943 352.372 234.009 352.372 250.12V366.601C352.372 382.713 339.313 395.778 323.211 395.778C307.109 395.778 294.051 382.713 294.051 366.601V250.12C294.051 234.009 307.109 220.943 323.211 220.943Z" stroke="url(#paint16_linear_15_1796)" stroke-width="8.26" stroke-miterlimit="10"></path> <path d="M323.211 233.396C332.436 233.396 339.923 240.887 339.923 250.117V366.598C339.923 375.828 332.436 383.319 323.211 383.319C313.986 383.319 306.499 375.828 306.499 366.598V250.117C306.499 240.887 313.986 233.396 323.211 233.396Z" stroke="url(#paint17_linear_15_1796)" stroke-width="8.26" stroke-miterlimit="10"></path> </g> <defs> <linearGradient id="paint0_linear_15_1796" x1="216.704" y1="360.843" x2="216.704" y2="83.7239" gradientUnits="userSpaceOnUse"> <stop stop-color="#E0E1E7" stop-opacity="0"></stop> <stop offset="0.87" stop-color="#233052" stop-opacity="0.6"></stop> </linearGradient> <linearGradient id="paint1_linear_15_1796" x1="216.515" y1="346.327" x2="216.515" y2="90.3966" gradientUnits="userSpaceOnUse"> <stop stop-color="#E0E1E7" stop-opacity="0"></stop> <stop offset="0.87" stop-color="#233052" stop-opacity="0.6"></stop> </linearGradient> <linearGradient id="paint2_linear_15_1796" x1="216.327" y1="331.812" x2="216.327" y2="97.0694" gradientUnits="userSpaceOnUse"> <stop stop-color="#E0E1E7" stop-opacity="0"></stop> <stop offset="0.87" stop-color="#233052" stop-opacity="0.6"></stop> </linearGradient> <linearGradient id="paint3_linear_15_1796" x1="216.138" y1="317.292" x2="216.138" y2="103.744" gradientUnits="userSpaceOnUse"> <stop stop-color="#E0E1E7" stop-opacity="0"></stop> <stop offset="0.87" stop-color="#233052" stop-opacity="0.6"></stop> </linearGradient> <linearGradient id="paint4_linear_15_1796" x1="215.95" y1="302.777" x2="215.95" y2="110.417" gradientUnits="userSpaceOnUse"> <stop stop-color="#E0E1E7" stop-opacity="0"></stop> <stop offset="0.87" stop-color="#233052" stop-opacity="0.6"></stop> </linearGradient> <linearGradient id="paint5_linear_15_1796" x1="215.762" y1="288.261" x2="215.762" y2="117.09" gradientUnits="userSpaceOnUse"> <stop stop-color="#E0E1E7" stop-opacity="0"></stop> <stop offset="0.87" stop-color="#233052" stop-opacity="0.6"></stop> </linearGradient> <linearGradient id="paint6_linear_15_1796" x1="105.225" y1="459.565" x2="105.225" y2="185.563" gradientUnits="userSpaceOnUse"> <stop stop-color="#E0E1E7" stop-opacity="0"></stop> <stop offset="0.87" stop-color="#233052" stop-opacity="0.6"></stop> </linearGradient> <linearGradient id="paint7_linear_15_1796" x1="105.003" y1="442.529" x2="105.003" y2="193.395" gradientUnits="userSpaceOnUse"> <stop stop-color="#E0E1E7" stop-opacity="0"></stop> <stop offset="0.87" stop-color="#233052" stop-opacity="0.6"></stop> </linearGradient> <linearGradient id="paint8_linear_15_1796" x1="104.782" y1="425.5" x2="104.782" y2="201.228" gradientUnits="userSpaceOnUse"> <stop stop-color="#E0E1E7" stop-opacity="0"></stop> <stop offset="0.87" stop-color="#233052" stop-opacity="0.6"></stop> </linearGradient> <linearGradient id="paint9_linear_15_1796" x1="104.561" y1="408.464" x2="104.561" y2="209.06" gradientUnits="userSpaceOnUse"> <stop stop-color="#E0E1E7" stop-opacity="0"></stop> <stop offset="0.87" stop-color="#233052" stop-opacity="0.6"></stop> </linearGradient> <linearGradient id="paint10_linear_15_1796" x1="104.34" y1="391.424" x2="104.34" y2="216.888" gradientUnits="userSpaceOnUse"> <stop stop-color="#E0E1E7" stop-opacity="0"></stop> <stop offset="0.87" stop-color="#233052" stop-opacity="0.6"></stop> </linearGradient> <linearGradient id="paint11_linear_15_1796" x1="104.119" y1="374.388" x2="104.119" y2="224.719" gradientUnits="userSpaceOnUse"> <stop stop-color="#E0E1E7" stop-opacity="0"></stop> <stop offset="0.87" stop-color="#233052" stop-opacity="0.6"></stop> </linearGradient> <linearGradient id="paint12_linear_15_1796" x1="324.427" y1="471.048" x2="324.427" y2="233.564" gradientUnits="userSpaceOnUse"> <stop stop-color="#E0E1E7" stop-opacity="0"></stop> <stop offset="0.87" stop-color="#233052" stop-opacity="0.6"></stop> </linearGradient> <linearGradient id="paint13_linear_15_1796" x1="324.235" y1="456.284" x2="324.235" y2="240.355" gradientUnits="userSpaceOnUse"> <stop stop-color="#E0E1E7" stop-opacity="0"></stop> <stop offset="0.87" stop-color="#233052" stop-opacity="0.6"></stop> </linearGradient> <linearGradient id="paint14_linear_15_1796" x1="324.044" y1="441.525" x2="324.044" y2="247.146" gradientUnits="userSpaceOnUse"> <stop stop-color="#E0E1E7" stop-opacity="0"></stop> <stop offset="0.87" stop-color="#233052" stop-opacity="0.6"></stop> </linearGradient> <linearGradient id="paint15_linear_15_1796" x1="323.852" y1="426.755" x2="323.852" y2="253.93" gradientUnits="userSpaceOnUse"> <stop stop-color="#E0E1E7" stop-opacity="0"></stop> <stop offset="0.87" stop-color="#233052" stop-opacity="0.6"></stop> </linearGradient> <linearGradient id="paint16_linear_15_1796" x1="323.66" y1="411.995" x2="323.66" y2="260.72" gradientUnits="userSpaceOnUse"> <stop stop-color="#E0E1E7" stop-opacity="0"></stop> <stop offset="0.87" stop-color="#233052" stop-opacity="0.6"></stop> </linearGradient> <linearGradient id="paint17_linear_15_1796" x1="323.468" y1="397.225" x2="323.468" y2="267.505" gradientUnits="userSpaceOnUse"> <stop stop-color="#E0E1E7" stop-opacity="0"></stop> <stop offset="0.87" stop-color="#233052" stop-opacity="0.6"></stop> </linearGradient> </defs> </svg>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="backstretch">
+            <img src="~/content/images/theme/login-background.jpg" alt="Background">
+        </div>
+    </div><!-- End Begin page content -->
+
+
+    <span id="notification" style="display:none;"></span>
+
+    <script id="wrongTemplate" type="text/x-kendo-template">
+        <div class="wrong-temp">
+            <img src="../content/images/notification/error-icon.png" />
+            <h3>#= title #</h3>
+            <p style="word-wrap: break-word;white-space: -moz-pre-wrap;white-space: pre-wrap; position: absolute;padding-left: 10px;">#= message #</p>
+        </div>
+    </script>
+
+    <script id="errorTemplate" type="text/x-kendo-template">
+        <div class="wrong-pass">
+            <img src="../content/images/notification/error-icon.png" />
+            <h3>#= title #</h3>
+            <p style="word-wrap: break-word;white-space: -moz-pre-wrap;white-space: pre-wrap;position: absolute;padding-left: 10px;">#= message #</p>
+        </div>
+    </script>
+
+    <script id="successTemplate" type="text/x-kendo-template">
+        <div class="upload-success">
+            <img src="../content/images/notification/success-icon.png" />
+            <h3 style="word-wrap: break-word;white-space: -moz-pre-wrap;white-space: pre-wrap;position: absolute;padding-left: 10px;">#= message #</h3>
+        </div>
+    </script>
+
+    <script type="text/javascript">
+        localStorage.removeItem("_MnList");
+        localStorage.removeItem("_homeUrl");
+        var notification = $("#notification").kendoNotification({
+            position: {
+                pinned: true,
+                bottom: 30,
+                right: 30
+            },
+            autoHideAfter: 5000,
+            stacking: "top",
+            templates: [{
+                type: "warning",
+                template: $("#wrongTemplate").html()
+            }, {
+                type: "error",
+                template: $("#errorTemplate").html()
+            }, {
+                type: "success",
+                template: $("#successTemplate").html()
+            }],
+            show: function (e) {
+                $(".k-notification").closest(".k-animation-container").addClass("customClass");
+            }
+
+        }).data("kendoNotification");
+    </script>
+
+    <script type="text/javascript">
+
+        const messageNotification = '@ViewBag.Notification';
+        if (messageNotification != '') {
+            notification.show({
+                title: "Thông báo",
+                message: messageNotification,
+            }, "error");
+        }
+    </script>
+    @if (numOfLoginFailed > 0)
+    {
+        <style type="text/css">
+            #refreshCaptcha {
+                margin-left: 5px;
+            }
+
+                #refreshCaptcha:hover {
+                    cursor: pointer;
+                    color: blue;
+                }
+
+            .validation-summary-errors ul, .validation-summary-warning ul {
+                padding-left: 15px;
+            }
+
+            .validation-summary-warning ul {
+                color: #6f6200;
+            }
+        </style>
+
+
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#refreshCaptcha").on("click", function () {
+                    var img = $(this).parent().children("img")[0];
+                    img.src = "/Captcha?width=120&height=35&t=" + (new Date().getTime());
+                });
+            });
+            console.log("#username");
+            //$("#username")
+        </script>
+    }
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $("#isMobile").val(isMobile.any() ? true : false);
+
+        });
+    </script>
+</body>
+
+</html>
