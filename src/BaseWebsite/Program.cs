@@ -50,13 +50,6 @@ try
     builder.Services.AddControllers();
     builder.Services.AddControllersWithViews();
 
-    // Service Background
-    //var on_off_BackgroundService = builder.Configuration.GetSection("BackgroundService").Value;
-    //if (on_off_BackgroundService == "true")
-    //{
-    //    builder.Services.AddHostedService<ExampleBackground>();
-    //}
-
     builder.Services.AddHttpContextAccessor();
 
     builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

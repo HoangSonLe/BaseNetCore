@@ -1,7 +1,6 @@
 ﻿using Application.Base;
 using Application.Services.WebInterfaces;
 using BaseWebsite.Authorizations;
-using Core.Base;
 using Core.CommonModels.BaseModels;
 using Core.Enums;
 using Core.Helper;

@@ -8,13 +8,7 @@ using Application.Services.WebServices;
 using AutoMapper;
 using Infrastructure.DBContexts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
@@ -31,8 +25,9 @@ try
     ConfigurationManager configuration = builder.Configuration;
     var connectionString = configuration.GetConnectionString("SAMPLEDB");
     builder.Services.AddDbContext<SampleDBContext>(options => options.UseNpgsql(connectionString));
+    builder.Services.AddDbContext<SampleReadOnlyDBContext>(options => options.UseNpgsql(connectionString));
     #endregion
-  
+
     #region AUTOMAPPER
     // Add services to the container.
     builder.Services.AddAutoMapper(typeof(Program));
@@ -164,7 +159,7 @@ try
     // REGISTER SERVICES HERE
     builder.Services.AddScoped<ITokenService, TokenService>();
 
-    builder.Services.AddSingleton<IChatHub, ChatHub>();
+    //builder.Services.AddSingleton<IChatHub, ChatHub>();
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IRoleService, RoleService>();
 
