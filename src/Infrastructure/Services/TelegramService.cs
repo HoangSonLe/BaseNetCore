@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Net;
 using System.Text.Json;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
@@ -135,7 +136,7 @@ namespace Infrastructure.Services
                     }
 
                     await _context.SaveChangesAsync();
-                    response.IsSuccess = true;
+                    response.StatusCode = HttpStatusCode.OK;
                     return response;
                 }
                 catch (Exception ex)

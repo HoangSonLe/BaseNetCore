@@ -177,8 +177,7 @@ namespace Core.CoreUtils
 
                 // Optionally, save the image file path to the model associated with the given ID
                 // You can return the image URL or other information
-
-                ack.IsSuccess = true;
+                ack.StatusCode = HttpStatusCode.OK;
                 ack.Data = folderFilePath;
                 return ack;
             }
@@ -198,7 +197,7 @@ namespace Core.CoreUtils
                 if (File.Exists(folderFilePath))
                 {
                     File.Delete(folderFilePath);
-                    ack.IsSuccess = true;
+                    ack.StatusCode = HttpStatusCode.OK;
                     return ack;
                 }
                 ack.AddMessages("File not found.");

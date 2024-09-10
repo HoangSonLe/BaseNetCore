@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces;
 using Core.CommonModels.BaseModels;
+using System.Net;
 
 namespace Application.Helpers
 {
@@ -15,12 +16,12 @@ namespace Application.Helpers
             try
             {
                 await repositoryOperation(respository);
-                ack.IsSuccess = true;
+                ack.StatusCode = HttpStatusCode.OK;
             }
             catch (Exception ex)
             {
                 handleError?.Invoke(ex);
-                ack.IsSuccess = false;
+                ack.StatusCode = HttpStatusCode.BadRequest;
                 ack.ExtractMessage(ex);
             }
         }

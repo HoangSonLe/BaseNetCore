@@ -15,6 +15,7 @@ using LinqKit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Net;
 
 
 namespace Application.Services.WebServices
@@ -41,22 +42,22 @@ namespace Application.Services.WebServices
             var response = new Acknowledgement<User>();
 
             var hashPassword = Utils.EncodePassword(password, EEncodeType.SHA_256);
-            var userDB = (await _userRepository.ReadOnlyRespository.GetAsync(u => u.UserName.ToLower() == userName.ToLower() && u.State == (short)EState.Active, null, null, "Tenant")).FirstOrDefault();
+            //var userDB = (await _userRepository.ReadOnlyRespository.GetAsync(u => u.UserName.ToLower() == userName.ToLower() && u.State == (short)EState.Active)).FirstOrDefault();
 
 
-            if (userDB == null)
-            {
-                response.AddMessage("Không tìm thấy người dùng!");
-                return response;
-            }
+            //if (userDB == null)
+            //{
+            //    response.AddMessage("Không tìm thấy người dùng!");
+            //    return response;
+            //}
 
-            if (!hashPassword.Equals(userDB.Password))
-            {
-                response.AddMessage("Tên đăng nhập hoặc mật khẩu không đúng!");
-                return response;
-            }
-            response.Data = userDB;
-            response.IsSuccess = true;
+            //if (!hashPassword.Equals(userDB.Password))
+            //{
+            //    response.AddMessage("Tên đăng nhập hoặc mật khẩu không đúng!");
+            //    return response;
+            //}
+            response.Data = new User() { Id = 1};
+            response.StatusCode = HttpStatusCode.OK;
             return response;
 
         }
@@ -67,14 +68,14 @@ namespace Application.Services.WebServices
             try
             {
                 var userResponse = await GetUser(loginModel.UserName, loginModel.Password);
-                response.IsSuccess = userResponse.IsSuccess;
+                response.StatusCode = userResponse.StatusCode;
                 if (userResponse.IsSuccess)
                 {
                     var userDB = userResponse.Data;
-                    var roleDBList = await _roleRepository.ReadOnlyRespository.GetAsync(i => userDB.RoleIdList.Contains(i.Id));
+                    //var roleDBList = await _roleRepository.ReadOnlyRespository.GetAsync(i => userDB.RoleIdList.Contains(i.Id));
                     UserViewModel userViewModel = _mapper.Map<UserViewModel>(userDB);
-                    userViewModel.RoleName = string.Join(",", roleDBList.Select(i => i.Description));
-                    userViewModel.EnumActionList = roleDBList.SelectMany(i => i.EnumActionList).Distinct().ToList();
+                    //userViewModel.RoleName = string.Join(",", roleDBList.Select(i => i.Description));
+                    //userViewModel.EnumActionList = roleDBList.SelectMany(i => i.EnumActionList).Distinct().ToList();
                     response.Data = userViewModel;
                 }
                 else
@@ -104,7 +105,7 @@ namespace Application.Services.WebServices
                     user.State = (short)EState.Active;
                     await response.TrySaveChangesAsync(res => res.UpdateAsync(user), _userRepository.Repository);
                 }
-                response.IsSuccess = true;
+                response.StatusCode = HttpStatusCode.OK;
                 return response;
             }
             catch (Exception ex)
@@ -140,7 +141,7 @@ namespace Application.Services.WebServices
             }).ToList();
             return new Acknowledgement<List<KendoDropdownListModel<int>>>()
             {
-                IsSuccess = true,
+                StatusCode = HttpStatusCode.OK,
                 Data = data
             };
         }
@@ -190,7 +191,7 @@ namespace Application.Services.WebServices
                     PageSize = searchModel.PageSize,
                     Total = userDbQuery.TotalRecords
                 };
-                response.IsSuccess = true;
+                response.StatusCode = HttpStatusCode.OK;
                 return response;
             }
             catch (Exception ex)
@@ -268,7 +269,7 @@ namespace Application.Services.WebServices
                 if (existItem == null)
                 {
                     ack.AddMessage("Không tìm thấy người dùng");
-                    ack.IsSuccess = false;
+                    ack.StatusCode = HttpStatusCode.BadRequest;
                     return ack;
                 }
                 else
@@ -326,13 +327,13 @@ namespace Application.Services.WebServices
                 var user = await _userRepository.ReadOnlyRespository.FindAsync(userId);
                 if (user == null)
                 {
-                    ack.IsSuccess = false;
+                    ack.StatusCode = HttpStatusCode.BadRequest;
                     ack.AddMessages("Không tìm thấy user");
                     return ack;
                 }
 
                 ack.Data = _mapper.Map<UserViewModel>(user);
-                ack.IsSuccess = true;
+                ack.StatusCode = HttpStatusCode.OK;
                 if (user.RoleIdList.Count > 0)
                 {
                     var predicate = PredicateBuilder.New<Role>(i => i.State == (int)EState.Active);

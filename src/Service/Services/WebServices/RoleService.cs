@@ -8,6 +8,7 @@ using LinqKit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Net;
 
 namespace Application.Services.WebServices
 {
@@ -43,7 +44,7 @@ namespace Application.Services.WebServices
                                                    })
                                                    .ToList();
                 response.Data = roleList;
-                response.IsSuccess = true;
+                response.StatusCode = HttpStatusCode.OK;
                 _logger.LogError("GetUserList " + "Tét");
                 return response;
 
