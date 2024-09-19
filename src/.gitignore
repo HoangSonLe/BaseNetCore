@@ -1,0 +1,59 @@
+# Các thư mục liên quan đến build
+bin/
+obj/
+
+# Visual Studio Code workspace settings
+.vscode/
+
+# Visual Studio specific files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.userprefs
+*.pfx
+*.publishsettings
+
+# Các thư mục và tệp liên quan đến NuGet
+*.nupkg
+*.snupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Các tệp tạm thời của hệ điều hành
+[Tt]humbs.db
+*.DS_Store
+*.sass-cache
+*.vspscc
+*.vssscc
+
+# IDE settings
+.idea/
+.idea_modules/
+*.sln.docstates
+
+# Rider settings
+.idea/
+*.sln.iml
+
+# Kết quả publish
+publish/
+
+# User-specific files
+*.rsuser
+*.rsxuser
+
+# Các file cấu hình và môi trường cụ thể
+appsettings.*.json
+
+# Kết quả test
+TestResults/
+*.trx
+*.coverage
+
+# Các tệp log
+*.log
+
+# Thư mục secrets của ASP.NET Core
+**/secrets/
