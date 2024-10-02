@@ -1,4 +1,4 @@
-using API.BackgroundTasks;
+﻿using API.BackgroundTasks;
 using Application.CustomAutoMapper;
 using Application.Interfaces;
 using Application.Repository;
@@ -50,6 +50,8 @@ try
         builder.Services.AddHostedService<ExampleBackground>();
     }
 
+    // Đăng ký Hosted Service
+    builder.Services.AddHostedService<TestKafkaConsumerService>();
 
     //var appConfig = builder.Configuration.GetSection("Path").Get<ApplicationConfiguration>();
     //builder.Services.AddSingleton<IApplicationConfiguration, ApplicationConfiguration>(e => appConfig);
@@ -167,6 +169,8 @@ try
     builder.Services.AddScoped<IUserRepository, UserRepository>();
     builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 
+    builder.Services.AddSingleton<KafkaProducerService>();
+    builder.Services.AddSingleton<IKafkaConsumerService, BaseKafkaConsumerService>();
     #endregion
 
 

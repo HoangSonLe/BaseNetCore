@@ -5,6 +5,7 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{CD82B624-4C7E-4C84-89F4-016308E26578}"
 	ProjectSection(SolutionItems) = preProject
+		KafkaDocs.md = KafkaDocs.md
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -25,6 +26,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "API\API.csproj", "{0DF27ADF-C3DD-4856-A317-CB897D166C78}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaseWebsite", "BaseWebsite\BaseWebsite.csproj", "{173439A4-73F1-429B-99E3-D8493ED76278}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{BBC18A81-B3C9-4624-92E0-BF7231BAFA0E}"
+	ProjectSection(SolutionItems) = preProject
+		doc1.yml = doc1.yml
+		Docker\docker-compose.yml = Docker\docker-compose.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

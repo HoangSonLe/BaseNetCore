@@ -14,6 +14,27 @@ namespace Core.CoreUtils
     /// </summary>
     public static class Utils
     {
+        #region STRING
+        public static List<string> ToSingleList(this string _string)
+        {
+            return new List<string> { _string };
+        }
+        public static string ToStringList(this List<string> _stringList)
+        {
+            return string.Join(", ", _stringList);
+        }
+        #endregion
+
+
+
+
+
+
+
+
+
+
+
         #region Private Declare Model
         public static string secretKey = "auth_api_3sdf43rc11239hsdcnsc0esdcsd!asd0023";//line 1
         // Set your salt here, change it to meet your flavor:

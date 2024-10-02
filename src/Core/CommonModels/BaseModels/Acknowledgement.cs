@@ -2,6 +2,21 @@
 
 namespace Core.CommonModels.BaseModels
 {
+    public class AcknowledgementInternal
+    {
+        public bool IsSuccess { get; set; }
+        public List<string> MessageList { get; set; } = new List<string>();
+        public AcknowledgementInternal() { }
+        public AcknowledgementInternal(bool isSuccess)
+        {
+            IsSuccess = isSuccess;
+        }
+        public AcknowledgementInternal(bool isSuccess, List<string> messages)
+        {
+            IsSuccess = isSuccess;
+            MessageList = messages;
+        }
+    }
     public class Acknowledgement
     {
         public HttpStatusCode StatusCode { get; set; } = HttpStatusCode.BadRequest;

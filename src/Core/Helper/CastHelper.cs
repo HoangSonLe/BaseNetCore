@@ -1,4 +1,6 @@
 ﻿using Core.CommonModels.BaseModels;
+using Microsoft.AspNetCore.Http;
+using System.Net;
 
 namespace Core.Helper
 {
@@ -23,5 +25,15 @@ namespace Core.Helper
                 SuccessMessageList = ackTSource.SuccessMessageList
             };
         }
+        public static Acknowledgement AsAcknowledgement(this AcknowledgementInternal ackT)
+        {
+
+            return new Acknowledgement()
+            {
+                StatusCode = ackT.IsSuccess ? HttpStatusCode.OK : HttpStatusCode.BadRequest,
+                ErrorMessageList = new List<string>()
+            }; 
+        }
+
     }
 }

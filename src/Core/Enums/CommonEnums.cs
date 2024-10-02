@@ -25,4 +25,10 @@
         Excel,
         //Word,...
     }
+    public enum EKafkaMessageStatus
+    {
+        Pending,
+        Processed,
+        Failed
+    }
 }

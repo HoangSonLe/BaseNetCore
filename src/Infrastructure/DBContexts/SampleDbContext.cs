@@ -39,6 +39,7 @@ namespace Infrastructure.DBContexts
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<TelegramChat> TelegramChats { get; set; }
+        public virtual DbSet<KafkaMessage> KafkaMessages { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -52,6 +53,7 @@ namespace Infrastructure.DBContexts
             modelBuilder.ApplyConfiguration(new UserEntityConfigurations());
             modelBuilder.ApplyConfiguration(new RoleEntityConfigurations());
             modelBuilder.ApplyConfiguration(new TelegramChatEntityConfigurations());
+            modelBuilder.ApplyConfiguration(new KafkaMessageEntityConfigurations());
 
             //Default value for column entity models
 
