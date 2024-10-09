@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "L4WJpIjYuIbEBaacTKREZTCWTk/X+bQRegyp3aKBbNsdDEirbgUmCXf234Pxv1MB8CoYNwK/qqaVRc3yxYTxHQ==",
+  "dgSpecHash": "qFhVikKw2KU=",
   "success": true,
-  "projectFilePath": "C:\\Users\\ADMIN\\source\\repos\\BaseSourceBackend\\src\\Core\\Core.csproj",
+  "projectFilePath": "C:\\Users\\ADMIN\\source\\repos\\BaseNetCore\\src\\Core\\Core.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ADMIN\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\ADMIN\\.nuget\\packages\\microsoft.aspnetcore.authentication.abstractions\\2.2.0\\microsoft.aspnetcore.authentication.abstractions.2.2.0.nupkg.sha512",

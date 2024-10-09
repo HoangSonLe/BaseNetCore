@@ -5,6 +5,7 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{CD82B624-4C7E-4C84-89F4-016308E26578}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\..\..\Desktop\Docker Notes After Present.docx = ..\..\..\..\Desktop\Docker Notes After Present.docx
 		README.md = README.md
 	EndProjectSection
 EndProject
