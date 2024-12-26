@@ -22,7 +22,7 @@ namespace BaseWebsite.Controllers
         public async Task<IActionResult> Index()
         {
             var _user = await UserService.GetUserById(int.Parse(_currentUserId));
-            return MapToIActionResult();
+            return MapToIActionResult(_user);
         }
         [AllowAnonymous]
         public string Values()

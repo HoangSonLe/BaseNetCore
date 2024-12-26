@@ -5,8 +5,6 @@ using Microsoft.Extensions.Logging;
 using System.Net;
 namespace Application.Base
 {
-    [ApiController]
-    //[Route("api/[controller]")]
     public class BaseController<T> : Controller
     {
         private readonly ILogger<T> _logger;
