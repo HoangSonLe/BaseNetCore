@@ -8,7 +8,7 @@ namespace Core.Helper
         {
             return new Acknowledgement()
             {
-                IsSuccess = ackT.IsSuccess,
+                StatusCode = ackT.StatusCode,
                 ErrorMessageList = ackT.ErrorMessageList,
                 SuccessMessageList = ackT.SuccessMessageList
             };
@@ -18,7 +18,7 @@ namespace Core.Helper
         {
             return new Acknowledgement<TResult>()
             {
-                IsSuccess = ackTSource.IsSuccess,
+                StatusCode = ackTSource.StatusCode,
                 ErrorMessageList = ackTSource.ErrorMessageList,
                 SuccessMessageList = ackTSource.SuccessMessageList
             };

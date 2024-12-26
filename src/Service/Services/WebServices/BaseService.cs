@@ -21,7 +21,6 @@ namespace Application.Services.WebServices
         public IConfiguration Configuration => _configuration;
         public int _currentUserId;
         public List<ERoleType> _currentUserRoleId;
-        public int? _currentTenantId;
 
         public BaseService(
             ILogger<T> logger,

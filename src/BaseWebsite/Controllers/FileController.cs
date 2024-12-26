@@ -4,6 +4,7 @@ using Core.CommonModels.BaseModels;
 using Core.CoreUtils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace BaseWebsite.Controllers
 {
@@ -39,13 +40,13 @@ namespace BaseWebsite.Controllers
             {
                 return new Acknowledgement<UploadFileResponse>()
                 {
-                    IsSuccess = true,
+                    StatusCode = HttpStatusCode.OK,
                     Data = ack.Data.First()
                 };
             }
             return new Acknowledgement<UploadFileResponse>()
             {
-                IsSuccess = false,
+                StatusCode = HttpStatusCode.BadRequest,
                 ErrorMessageList = ack.ErrorMessageList
             };
         }
@@ -94,7 +95,7 @@ namespace BaseWebsite.Controllers
                     ack.AddMessage("Không tìm thấy tệp, vui lòng kiểm tra lại.");
                     return ack;
                 }
-                ack.IsSuccess = true;
+                ack.StatusCode = HttpStatusCode.OK;
                 return ack;
 
             }

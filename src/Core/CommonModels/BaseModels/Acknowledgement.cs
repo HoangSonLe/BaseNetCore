@@ -1,8 +1,12 @@
-﻿namespace Core.CommonModels.BaseModels
+﻿using System.Net;
+
+namespace Core.CommonModels.BaseModels
 {
     public class Acknowledgement
     {
-        public bool IsSuccess { get; set; }
+        public HttpStatusCode StatusCode { get; set; } = HttpStatusCode.BadRequest;
+
+        public bool IsSuccess => (int)StatusCode >= 200 && (int)StatusCode < 300;
 
         public List<string> ErrorMessageList { get; set; }
 
@@ -10,13 +14,12 @@
 
         public Acknowledgement()
         {
-            IsSuccess = false;
             ErrorMessageList = new List<string>();
             SuccessMessageList = new List<string>();
         }
-        public Acknowledgement(bool isSuccess)
+        public Acknowledgement(HttpStatusCode statusCode)
         {
-            IsSuccess = isSuccess;
+            StatusCode = statusCode;
             ErrorMessageList = new List<string>();
             SuccessMessageList = new List<string>();
         }
@@ -60,7 +63,6 @@
             }
         }
     }
-
     public class Acknowledgement<T> : Acknowledgement
     {
         public T Data { get; set; }
