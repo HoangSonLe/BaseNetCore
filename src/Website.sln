@@ -5,7 +5,9 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{CD82B624-4C7E-4C84-89F4-016308E26578}"
 	ProjectSection(SolutionItems) = preProject
+		AggregationExample.md = AggregationExample.md
 		README.md = README.md
+		API\ReadmeElastic.md = API\ReadmeElastic.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Business", "Business", "{279DDB54-0DB7-4211-91CB-C5F8BED6AD85}"
@@ -25,6 +27,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "API\API.csproj", "{0DF27ADF-C3DD-4856-A317-CB897D166C78}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaseWebsite", "BaseWebsite\BaseWebsite.csproj", "{173439A4-73F1-429B-99E3-D8493ED76278}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{48D4FEC4-4C87-4268-896B-3DFF2F91ECC6}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\..\docker\elastick_kibana\docker-compose.yml = ..\..\..\..\docker\elastick_kibana\docker-compose.yml
+		..\..\..\..\docker\elastick_kibana\elasticsearch.yml = ..\..\..\..\docker\elastick_kibana\elasticsearch.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

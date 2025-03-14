@@ -6,13 +6,17 @@ using Application.Services.TokenServices;
 using Application.Services.WebInterfaces;
 using Application.Services.WebServices;
 using AutoMapper;
+using Elastic.Clients.Elasticsearch;
+using Elastic.Transport;
 using Infrastructure.DBContexts;
+using Infrastructure.Elastic;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using NLog.Web;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 
@@ -58,7 +62,7 @@ try
     //var tokenSecretKey = Utils.DecodePassword(builder.Configuration.GetSection("Path:JWT:SecretKey").Value, EEncodeType.SHA_256);
     var tokenSettings = builder.Configuration.GetSection("ExternalServices:TokenSettings");
     builder.Services.Configure<TokenSettings>(tokenSettings);
-    var tokenSettingModel = tokenSettings.Get<TokenSettings>(); 
+    var tokenSettingModel = tokenSettings.Get<TokenSettings>();
     builder.Services.AddAuthentication(cfg =>
     {
         cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -116,7 +120,8 @@ try
         hubOptions.ClientTimeoutInterval = TimeSpan.FromHours(24);
         hubOptions.KeepAliveInterval = TimeSpan.FromHours(8);
     });
-    builder.Services.AddSwaggerGen(c => {
+    builder.Services.AddSwaggerGen(c =>
+    {
         c.SwaggerDoc("v1", new OpenApiInfo
         {
             Title = "JWTToken_Auth_API",
@@ -145,6 +150,32 @@ try
         }
     });
     });
+    #region ELASTICSEARCH
+    builder.Services.AddHttpClient("ElasticsearchClient", client =>
+    {
+        var baseUrl = builder.Configuration.GetSection("ElasticSearch:BaseUrl").Value;
+        var userName = builder.Configuration.GetSection("ElasticSearch:UserName").Value;
+        var password = builder.Configuration.GetSection("ElasticSearch:Password").Value;
+        client.BaseAddress = new Uri(baseUrl);
+        var credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{userName}:{password}"));
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
+        client.DefaultRequestHeaders.Add("Accept", "application/json");
+
+    });
+    builder.Services.AddScoped<IBaseElasticSearchService, BaseElasticSearchService>();
+
+
+    builder.Services.AddSingleton(provider =>
+    {
+        var baseUrl = builder.Configuration.GetSection("ElasticSearch:BaseUrl").Value;
+        var userName = builder.Configuration.GetSection("ElasticSearch:UserName").Value;
+        var password = builder.Configuration.GetSection("ElasticSearch:Password").Value;
+        var defaultIndex = builder.Configuration.GetSection("ElasticSearch:IndexName").Value;
+        var client = new ElasticsearchClientSettings(new Uri(baseUrl)).Authentication(new BasicAuthentication(userName, password)).DefaultIndex(defaultIndex);
+        return new ElasticsearchClient(client);
+    });
+    #endregion
+
     #region NLog: Setup NLog for Dependency injection
     logger.Debug("Running...");
     builder.Logging.ClearProviders();
@@ -158,7 +189,6 @@ try
 
     // REGISTER SERVICES HERE
     builder.Services.AddScoped<ITokenService, TokenService>();
-
     //builder.Services.AddSingleton<IChatHub, ChatHub>();
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IRoleService, RoleService>();
