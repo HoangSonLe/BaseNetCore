@@ -386,6 +386,6 @@ namespace Infrastructure.Elastic
                 Data = response,
                 StatusCode = System.Net.HttpStatusCode.OK
             };
-
+        }
         }
 }

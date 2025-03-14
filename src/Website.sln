@@ -3,13 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{CD82B624-4C7E-4C84-89F4-016308E26578}"
-	ProjectSection(SolutionItems) = preProject
-		AggregationExample.md = AggregationExample.md
-		README.md = README.md
-		API\ReadmeElastic.md = API\ReadmeElastic.md
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Business", "Business", "{279DDB54-0DB7-4211-91CB-C5F8BED6AD85}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{FEF52D74-4F46-418A-87C4-185193399C91}"
@@ -33,6 +26,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{48D4FE
 		..\..\..\..\docker\elastick_kibana\docker-compose.yml = ..\..\..\..\docker\elastick_kibana\docker-compose.yml
 		..\..\..\..\docker\elastick_kibana\elasticsearch.yml = ..\..\..\..\docker\elastick_kibana\elasticsearch.yml
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "mnt", "mnt", "{A9138191-69E0-4F93-BDEC-6C89F7FCD4F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -70,6 +65,7 @@ Global
 		{9A0C4BC2-B211-4DC7-A6DA-6E8ACE3DF86D} = {187AA991-D506-4B00-BB36-E5A17805F61F}
 		{0DF27ADF-C3DD-4856-A317-CB897D166C78} = {6E93B534-3C12-4A93-ADD4-74B0FB737916}
 		{173439A4-73F1-429B-99E3-D8493ED76278} = {6E93B534-3C12-4A93-ADD4-74B0FB737916}
+		{A9138191-69E0-4F93-BDEC-6C89F7FCD4F9} = {48D4FEC4-4C87-4268-896B-3DFF2F91ECC6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {85D548BB-EF28-40D3-ACDF-52D465A86E53}
