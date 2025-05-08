@@ -175,7 +175,7 @@ namespace Application.Services.WebServices
                 var userDBList = _mapper.Map<List<UserViewModel>>(userDbQuery.Data);
                 var roleDBList = await _roleRepository.ReadOnlyRespository.GetAsync();
                 var updateByUserIdList = userDBList.Select(i => i.UpdatedBy).ToList();
-                var updateByUserList = await _userRepository.ReadOnlyRespository.GetAsync(i => updateByUserIdList.Contains(i.Id));
+                var updateByUserList = await _userRepository.ReadOnlyRespository.GetAsync(i=> i,i => updateByUserIdList.Contains(i.Id));
                 foreach (var user in userDBList)
                 {
                     var roles = roleDBList.Where(j => user.RoleIdList.Contains(j.Id)).ToList();

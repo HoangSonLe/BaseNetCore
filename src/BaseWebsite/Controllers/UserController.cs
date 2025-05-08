@@ -32,16 +32,16 @@ namespace BaseWebsite.Controllers
             if (User.Identity.IsAuthenticated)
             {
                 var userAck = await UserService.GetUserById(int.Parse(_currentUserId));
-                return Json(userAck);
+                return MapToIActionResult(userAck);
             }
-            return Json(response);
+            return MapToIActionResult(response);
         }
         [HttpGet]
         public async Task<IActionResult> GetUserDropdownList(string searchString, string selectedIdList)
         {
             var selectedIds = selectedIdList?.Split(',').Select(int.Parse).ToList();
             var result = await UserService.GetUserDataDropdownList(searchString, selectedIds ?? new List<int>());
-            return Json(result);
+            return MapToIActionResult(result);
         }
         [C3FunctionAuthorization(true, functionIdList: [(int)EActionRole.READ_USER])]
         [HttpPost]
@@ -49,7 +49,7 @@ namespace BaseWebsite.Controllers
         {
 
             var result = await UserService.GetUserList(searchModel);
-            return Json(result);
+            return MapToIActionResult(result);
         }
         [C3FunctionAuthorization(true, functionIdList: [(int)EActionRole.DELETE_USER])]
         [HttpGet]

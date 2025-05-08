@@ -3,18 +3,23 @@ using Application.CustomAutoMapper;
 using Application.Interfaces;
 using Application.Repository;
 using Application.Services.TokenServices;
+using Microsoft.AspNetCore.ResponseCompression;
 using Application.Services.WebInterfaces;
 using Application.Services.WebServices;
 using AutoMapper;
 using Infrastructure.DBContexts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using NLog.Web;
+using System.IO.Compression;
 using System.Reflection;
 using System.Text;
+using System.IO.Compression;
+using System.Text.Json;
 
 var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
 
@@ -58,7 +63,7 @@ try
     //var tokenSecretKey = Utils.DecodePassword(builder.Configuration.GetSection("Path:JWT:SecretKey").Value, EEncodeType.SHA_256);
     var tokenSettings = builder.Configuration.GetSection("ExternalServices:TokenSettings");
     builder.Services.Configure<TokenSettings>(tokenSettings);
-    var tokenSettingModel = tokenSettings.Get<TokenSettings>(); 
+    var tokenSettingModel = tokenSettings.Get<TokenSettings>();
     builder.Services.AddAuthentication(cfg =>
     {
         cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -116,7 +121,8 @@ try
         hubOptions.ClientTimeoutInterval = TimeSpan.FromHours(24);
         hubOptions.KeepAliveInterval = TimeSpan.FromHours(8);
     });
-    builder.Services.AddSwaggerGen(c => {
+    builder.Services.AddSwaggerGen(c =>
+    {
         c.SwaggerDoc("v1", new OpenApiInfo
         {
             Title = "JWTToken_Auth_API",
@@ -169,6 +175,24 @@ try
 
     #endregion
 
+    #region Zip
+
+    // Add Response Compression
+    builder.Services.AddResponseCompression(options =>
+    {
+        options.Providers.Add<GzipCompressionProvider>();
+        options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+            new[] { "application/json", "text/plain", "text/html", "text/css", "application/javascript" });
+        options.EnableForHttps = true;
+    });
+
+    // Configure Gzip compression level
+    builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+    {
+        options.Level = CompressionLevel.Fastest;
+    });
+
+    #endregion
 
 
     // REGISTER MIDDLEWARE HERE
@@ -220,6 +244,8 @@ try
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
     app.MapHub<ChatHub>("/chatHub");
+    // Use Response Compression
+    app.UseResponseCompression();
 
     app.Run();
     #endregion

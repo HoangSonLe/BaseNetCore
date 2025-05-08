@@ -14,10 +14,12 @@ using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using NLog.Web;
+using System.IO.Compression;
 using System.Reflection;
 using System.Text;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
@@ -156,6 +158,22 @@ try
     builder.Services.AddHttpClient<TelegramService>();
     builder.Services.AddHostedService<BotHostedBackgroundService>();
 
+    #region Response Compression
+    // Add Response Compression
+    builder.Services.AddResponseCompression(options =>
+    {
+        options.Providers.Add<GzipCompressionProvider>();
+        options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+            new[] { "application/json", "text/plain", "text/html", "text/css", "application/javascript" });
+        options.EnableForHttps = true;
+    });
+
+    // Configure Gzip compression level
+    builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+    {
+        options.Level = CompressionLevel.Fastest;
+    });
+    #endregion
 
 
     // REGISTER MIDDLEWARE HERE
@@ -217,6 +235,10 @@ try
             pattern: "{controller=Home}/{action=Index}/{id?}");
     //app.MapHub<ChatHub>("/chatHub");
     app.MapRazorPages();
+
+    // Use Response Compression
+    app.UseResponseCompression();
+
     // Start the Telegram service
     //var telegramService = app.Services.GetRequiredService<TelegramService>();
     //telegramService.Start();
