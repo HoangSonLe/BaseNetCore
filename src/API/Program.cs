@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using NLog.Web;
 using System.IO.Compression;
 using System.Reflection;
+using Application.Extensions;
 using System.Text;
 using System.IO.Compression;
 using System.Text.Json;
@@ -50,7 +51,7 @@ try
     builder.Services.AddControllersWithViews();
 
     // Add HttpContextAccessor for accessing current user context
-    builder.Services.AddHttpContextAccessor();
+    builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
     #region BACKGROUND SERVICES
     // Service Background
     var on_off_BackgroundService = builder.Configuration.GetSection("BackgroundService").Value;
@@ -222,6 +223,10 @@ try
         });
     }
     // Configure the HTTP request pipeline.
+
+    // Add global exception handling middleware first
+    app.UseGlobalExceptionHandling();
+
     if (!app.Environment.IsDevelopment())
     {
         app.UseExceptionHandler("/Home/Error");

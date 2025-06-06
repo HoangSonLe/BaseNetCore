@@ -24,6 +24,7 @@ using System.IO.Compression;
 using System.Reflection;
 using System.Text;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
+using Application.Extensions;
 
 var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
 
@@ -197,7 +198,12 @@ try
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "My Test1 Api v1");
         });
     }
+
     // Configure the HTTP request pipeline.
+
+    // Add global exception handling middleware first
+    app.UseGlobalExceptionHandling();
+
     if (!app.Environment.IsDevelopment())
     {
         app.UseExceptionHandler("/Home/Error");
