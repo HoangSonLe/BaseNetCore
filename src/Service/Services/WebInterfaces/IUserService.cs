@@ -22,5 +22,11 @@ namespace Application.Services.WebInterfaces
 
         Task<Acknowledgement<List<KendoDropdownListModel<int>>>> GetUserDataDropdownList(string searchString, List<int> selectedIdList);
 
+        /// <summary>
+        /// Gets the current user ID from the authentication context
+        /// </summary>
+        /// <returns>Current user ID and authentication status</returns>
+        Task<Acknowledgement<object>> GetCurrentUserId();
+
     }
 }

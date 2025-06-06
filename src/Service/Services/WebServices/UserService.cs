@@ -118,7 +118,7 @@ namespace Application.Services.WebServices
         public async Task<Acknowledgement<List<KendoDropdownListModel<int>>>> GetUserDataDropdownList(string searchString, List<int> selectedIdList)
         {
             var predicate = PredicateBuilder.New<User>(i => i.State == (int)EState.Active);
-            predicate = UserAuthorPredicate.GetUserAuthorPredicate(predicate, _currentUserRoleId, _currentUserId);
+            predicate = UserAuthorPredicate.GetUserAuthorPredicate(predicate, CurrentUserRoles.ToList(), CurrentUserId);
             var selectedUserList = new List<User>();
             if (selectedIdList.Count > 0 && string.IsNullOrEmpty(searchString))
             {
@@ -166,7 +166,7 @@ namespace Application.Services.WebServices
                 }
 
                 var userList = new List<UserViewModel>();
-                predicate = UserAuthorPredicate.GetUserAuthorPredicate(predicate, _currentUserRoleId, _currentUserId);
+                predicate = UserAuthorPredicate.GetUserAuthorPredicate(predicate, CurrentUserRoles.ToList(), CurrentUserId);
                 var userDbQuery = await _userRepository.ReadOnlyRespository.GetWithPagingAsync(
                     new PagingParameters(searchModel.PageNumber, searchModel.PageSize),
                     predicate,
@@ -175,7 +175,7 @@ namespace Application.Services.WebServices
                 var userDBList = _mapper.Map<List<UserViewModel>>(userDbQuery.Data);
                 var roleDBList = await _roleRepository.ReadOnlyRespository.GetAsync();
                 var updateByUserIdList = userDBList.Select(i => i.UpdatedBy).ToList();
-                var updateByUserList = await _userRepository.ReadOnlyRespository.GetAsync(i=> i,i => updateByUserIdList.Contains(i.Id));
+                var updateByUserList = await _userRepository.ReadOnlyRespository.GetAsync(i => updateByUserIdList.Contains(i.Id));
                 foreach (var user in userDBList)
                 {
                     var roles = roleDBList.Where(j => user.RoleIdList.Contains(j.Id)).ToList();
@@ -258,7 +258,7 @@ namespace Application.Services.WebServices
                 newUser.NameNonUnicode = Utils.NonUnicode(newUser.Name);
                 newUser.Password = postData.Password;
                 newUser.CreatedDate = DateTime.Now;
-                newUser.CreatedBy = _currentUserId;
+                newUser.CreatedBy = CurrentUserId;
                 newUser.UpdatedDate = newUser.CreatedDate;
                 newUser.UpdatedBy = newUser.CreatedBy;
                 await ack.TrySaveChangesAsync(res => res.AddAsync(newUser), _userRepository.Repository);
@@ -280,7 +280,7 @@ namespace Application.Services.WebServices
                     existItem.UserName = postData.UserName;
                     existItem.NameNonUnicode = Utils.NonUnicode(postData.Name);
                     existItem.UpdatedDate = DateTime.Now;
-                    existItem.UpdatedBy = _currentUserId;
+                    existItem.UpdatedBy = CurrentUserId;
                     await ack.TrySaveChangesAsync(res => res.UpdateAsync(existItem), _userRepository.Repository);
                 }
             }
@@ -376,7 +376,7 @@ namespace Application.Services.WebServices
 
             postData.OldPassword = Utils.EncodePassword(postData.OldPassword, EEncodeType.SHA_256);
             postData.NewPassword = Utils.EncodePassword(postData.NewPassword, EEncodeType.SHA_256);
-            var user = await _userRepository.Repository.FirstOrDefaultAsync(i => i.Id == _currentUserId);
+            var user = await _userRepository.Repository.FirstOrDefaultAsync(i => i.Id == CurrentUserId);
             if (user == null)
             {
                 ack.AddMessage("Không tìm thấy người dùng.");
@@ -388,10 +388,65 @@ namespace Application.Services.WebServices
                 return ack;
             }
             user.Password = postData.NewPassword;
-            user.UpdatedBy = _currentUserId;
+            user.UpdatedBy = CurrentUserId;
             user.UpdatedDate = DateTime.Now;
             await ack.TrySaveChangesAsync(res => res.UpdateAsync(user), _userRepository.Repository);
             return ack;
+        }
+
+        /// <summary>
+        /// Gets the current user ID from the authentication context - Optimized version
+        /// </summary>
+        /// <returns>Current user ID and authentication status</returns>
+        public async Task<Acknowledgement<object>> GetCurrentUserId()
+        {
+            var ack = new Acknowledgement<object>();
+            try
+            {
+                // Sử dụng CurrentUserId property - đã tối ưu và readonly
+                if (IsAuthenticated)
+                {
+                    // Optionally get user details
+                    var user = await _userRepository.ReadOnlyRespository.FindAsync(CurrentUserId);
+
+                    ack.Data = new
+                    {
+                        UserId = CurrentUserId,
+                        IsAuthenticated = IsAuthenticated,
+                        UserName = user?.UserName ?? "Unknown",
+                        Name = user?.Name ?? "Unknown",
+                        Roles = CurrentUserRoles.Select(r => new {
+                            Id = (int)r,
+                            Name = r.ToString()
+                        }).ToList(),
+                        HasAdminRole = _IsHasAdminRole(),
+                        Message = "Current user retrieved successfully"
+                    };
+                    ack.StatusCode = HttpStatusCode.OK;
+                }
+                else
+                {
+                    ack.Data = new
+                    {
+                        UserId = (int?)null,
+                        IsAuthenticated = false,
+                        UserName = (string?)null,
+                        Name = (string?)null,
+                        Roles = new List<object>(),
+                        HasAdminRole = false,
+                        Message = "User is not authenticated"
+                    };
+                    ack.StatusCode = HttpStatusCode.Unauthorized;
+                }
+
+                return ack;
+            }
+            catch (Exception ex)
+            {
+                ack.ExtractMessage(ex);
+                _logger.LogError(ex, "Error getting current user ID");
+                return ack;
+            }
         }
 
     }

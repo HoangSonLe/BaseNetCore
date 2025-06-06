@@ -20,6 +20,7 @@ using System.Reflection;
 using System.Text;
 using System.IO.Compression;
 using System.Text.Json;
+using Core.Helper;
 
 var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
 
@@ -47,6 +48,9 @@ try
     #endregion
     builder.Services.AddControllers().AddNewtonsoftJson();
     builder.Services.AddControllersWithViews();
+
+    // Add HttpContextAccessor for accessing current user context
+    builder.Services.AddHttpContextAccessor();
     #region BACKGROUND SERVICES
     // Service Background
     var on_off_BackgroundService = builder.Configuration.GetSection("BackgroundService").Value;
@@ -166,6 +170,7 @@ try
     builder.Services.AddScoped<ITokenService, TokenService>();
 
     //builder.Services.AddSingleton<IChatHub, ChatHub>();
+    builder.Services.AddScoped<ICurrentUserContext, CurrentUserContext>();
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IRoleService, RoleService>();
 

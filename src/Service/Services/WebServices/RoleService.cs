@@ -29,7 +29,7 @@ namespace Application.Services.WebServices
             var response = new Acknowledgement<List<KendoDropdownListModel<int>>>();
             try
             {
-                var maxLevel = Utils.GetMaxLevelRole(_currentUserRoleId);
+                var maxLevel = Utils.GetMaxLevelRole(CurrentUserRoles.ToList());
                 var predicate = PredicateBuilder.New<Role>(i => i.Level > maxLevel);
                 if (!string.IsNullOrEmpty(searchString))
                 {

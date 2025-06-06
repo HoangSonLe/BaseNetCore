@@ -3,8 +3,16 @@ using System.Linq.Expressions;
 
 namespace Application.Interfaces
 {
+
     public interface IRepository<TEntity> : IDisposable where TEntity : class
     {
+        Task<List<T>> GetAsync<T>(
+            Expression<Func<TEntity, bool>> filter = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            PagingParameters paging = null,
+            string includeProperties = "",
+            Expression<Func<TEntity, T>> selector = null) where T : class;
+
         Task<List<TEntity>> GetAsync(
             Expression<Func<TEntity, bool>> filter = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
@@ -12,20 +20,14 @@ namespace Application.Interfaces
             string includeProperties = ""
         );
 
-        Task<List<TResult>> GetAsync<TResult>(
-            Expression<Func<TEntity, TResult>> selector,
+        Task<PagedResponse<T>> GetWithPagingAsync<T>(
+            PagingParameters paging,
             Expression<Func<TEntity, bool>> filter = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-            PagingParameters paging = null,
-            string includeProperties = ""
-        );
+            string includeProperties = "",
+            Expression<Func<TEntity, T>> selector = null) where T : class;
 
-        Task<PagedResponse<TEntity>> GetWithPagingAsync(PagingParameters paging, Expression<Func<TEntity, bool>> filter = null,
-         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-         string includeProperties = "");
-
-        Task<PagedResponse<TResult>> GetWithPagingAsync<TResult>(
-            Expression<Func<TEntity, TResult>> selector,
+        Task<PagedResponse<TEntity>> GetWithPagingAsync(
             PagingParameters paging,
             Expression<Func<TEntity, bool>> filter = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
@@ -33,10 +35,12 @@ namespace Application.Interfaces
 
         Task<TEntity> FindAsync(object id);
 
-        Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, string includeProperties = "");
+        Task<T> FirstOrDefaultAsync<T>(
+            Expression<Func<TEntity, bool>> predicate,
+            string includeProperties = "",
+            Expression<Func<TEntity, T>> selector = null) where T : class;
 
-        Task<TResult> FirstOrDefaultAsync<TResult>(
-            Expression<Func<TEntity, TResult>> selector,
+        Task<TEntity> FirstOrDefaultAsync(
             Expression<Func<TEntity, bool>> predicate,
             string includeProperties = "");
 
@@ -57,5 +61,25 @@ namespace Application.Interfaces
 
         Task<int> DeleteRangeAsync(List<TEntity> entityToDelete);
 
+        // Transaction-friendly methods (don't auto-save)
+        Task AddWithoutSaveAsync(TEntity entity);
+
+        Task AddRangeWithoutSaveAsync(List<TEntity> entity);
+
+        void UpdateWithoutSave(TEntity entityToUpdate);
+
+        void UpdateRangeWithoutSave(List<TEntity> entity);
+
+        void DeleteWithoutSave(TEntity entityToDelete);
+
+        void DeleteRangeWithoutSave(List<TEntity> entityToDelete);
+
+        Task<int> SaveChangesAsync();
+
+        // Alternative: Repository methods with transaction parameter
+        //Task<int> AddRangeAsync(List<TEntity> entity, bool autoSave = true);
+        //Task<int> UpdateRangeAsync(List<TEntity> entity, bool autoSave = true);
+
     }
+
 }

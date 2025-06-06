@@ -34,16 +34,6 @@ namespace BaseWebsite.Authorizations
             if (!Succeed && listFunction.Redirect)
             {
                 context.Fail();
-                //var Response = _httpContextAccessor.HttpContext.Response;
-                //var message = Encoding.UTF8.GetBytes("<div><p>Bạn không có quyền truy cập vào đường dẫn này</p></div>");
-
-                //Response.OnStarting(async () =>
-                //{
-                //    Response.ContentType = "text/html; charset=utf-8";
-                //    _httpContextAccessor.HttpContext.Response.StatusCode = 429;
-                //    await Response.Body.WriteAsync(message, 0, message.Length);
-                //});
-
                 var htmlFilePath = Path.Combine(_webHostEnvironment.WebRootPath, "403Page.html");
                 var htmlContent = File.ReadAllText(htmlFilePath);
                 _httpContextAccessor.HttpContext.Response.ContentType = "text/html";

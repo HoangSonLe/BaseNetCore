@@ -1,0 +1,46 @@
+### Test API để lấy Current User ID
+### Đây là file test cho API GetCurrentUserId và GetCurrentUserInfo
+
+### 1. Test API GetCurrentUserId - Trả về thông tin user hiện tại
+GET https://localhost:7001/api/Test/GetCurrentUserId
+Accept: application/json
+Content-Type: application/json
+
+###
+
+### 2. Test API GetCurrentUserInfo - Trả về thông tin user hiện tại với context mở rộng
+GET https://localhost:7001/api/Test/GetCurrentUserInfo
+Accept: application/json
+Content-Type: application/json
+
+###
+
+### 3. Test với localhost khác (nếu port khác)
+GET https://localhost:5001/api/Test/GetCurrentUserId
+Accept: application/json
+Content-Type: application/json
+
+###
+
+### 4. Test với HTTP (không SSL)
+GET http://localhost:5000/api/Test/GetCurrentUserId
+Accept: application/json
+Content-Type: application/json
+
+###
+
+### 5. Test với Authentication Header (nếu cần)
+GET https://localhost:7001/api/Test/GetCurrentUserId
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+
+###
+
+### 6. Test API GetCurrentUserInfo với Authentication
+GET https://localhost:7001/api/Test/GetCurrentUserInfo
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+
+###

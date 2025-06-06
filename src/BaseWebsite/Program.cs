@@ -9,6 +9,7 @@ using BaseWebsite.BackgroundServices;
 using Core.CommonModels;
 using Core.CoreUtils;
 using Core.Enums;
+using Core.Helper;
 using Infrastructure.DBContexts;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -144,6 +145,7 @@ try
     #region ConfigurationRepositoryAndUnitOfWorkSettings
     // REGISTER SERVICES HERE
     //builder.Services.AddSingleton<IChatHub, ChatHub>();
+     builder.Services.AddScoped<ICurrentUserContext, CurrentUserContext>();
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IRoleService, RoleService>();
 
