@@ -1,0 +1,355 @@
+@{
+    ViewData["Title"] = "Cookie Memory Test";
+}
+
+<div class="container mt-4">
+    <h2>Cookie Memory System Test</h2>
+    <p class="text-muted">This page demonstrates the cookie memory functionality. Remove this in production.</p>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Test Operations</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" onclick="testBasicOperations()">Test Basic Operations</button>
+                        <button class="btn btn-info" onclick="testUserPreferences()">Test User Preferences</button>
+                        <button class="btn btn-success" onclick="testSearchMemory()">Test Search Memory</button>
+                        <button class="btn btn-warning" onclick="testFormAutoSave()">Test Form Auto-Save</button>
+                        <button class="btn btn-secondary" onclick="testLoginMemory()">Test Login Memory</button>
+                        <button class="btn btn-dark" onclick="testCustomMemory()">Test Custom Memory</button>
+                        <hr>
+                        <button class="btn btn-outline-info" onclick="getCookieInfo()">Get Cookie Info</button>
+                        <button class="btn btn-outline-danger" onclick="clearTestCookies()">Clear Test Cookies</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demo Form for Auto-Save -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>Demo Form (Auto-Save Enabled)</h5>
+                </div>
+                <div class="card-body">
+                    <form id="demo-form" data-auto-save data-form-id="demo-form">
+                        <div class="mb-3">
+                            <label for="demo-name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="demo-name" name="name" placeholder="Enter your name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="demo-email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="demo-email" name="email" placeholder="Enter your email">
+                        </div>
+                        <div class="mb-3">
+                            <label for="demo-message" class="form-label">Message</label>
+                            <textarea class="form-control" id="demo-message" name="message" rows="3" placeholder="Enter your message"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="demo-newsletter" name="newsletter">
+                                <label class="form-check-label" for="demo-newsletter">
+                                    Subscribe to newsletter
+                                </label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <small class="text-muted d-block mt-2">
+                            <span id="save-status"></span>
+                            This form auto-saves every 30 seconds and on changes.
+                        </small>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Demo Search -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>Demo Search (With Memory)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="position-relative">
+                        <input type="search" class="form-control" id="demo-search" placeholder="Search... (try typing and focusing)">
+                        <div id="demo-search-suggestions" class="search-suggestions"></div>
+                    </div>
+                    <small class="text-muted">Recent searches will appear when you focus on the search box.</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Test Results</h5>
+                </div>
+                <div class="card-body">
+                    <pre id="test-results" class="bg-light p-3" style="height: 400px; overflow-y: auto;">
+Click a test button to see results here...
+                    </pre>
+                </div>
+            </div>
+
+            <!-- User Preferences Demo -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>User Preferences Demo</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="theme-select" class="form-label">Theme</label>
+                        <select class="form-select" id="theme-select" onchange="updateTheme()">
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                            <option value="auto">Auto</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="language-select" class="form-label">Language</label>
+                        <select class="form-select" id="language-select" onchange="updateLanguage()">
+                            <option value="en-US">English</option>
+                            <option value="vi-VN">Tiếng Việt</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="page-size-select" class="form-label">Page Size</label>
+                        <select class="form-select" id="page-size-select" onchange="updatePageSize()">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="savePreferences()">Save Preferences</button>
+                    <button class="btn btn-outline-secondary" onclick="loadPreferences()">Load Preferences</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .search-suggestions {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #ccc;
+        border-top: none;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+    }
+
+    .search-suggestion-item {
+        padding: 8px 12px;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+    }
+
+    .search-suggestion-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .search-suggestion-item:last-child {
+        border-bottom: none;
+    }
+
+    [data-theme="dark"] {
+        background-color: #343a40;
+        color: #fff;
+    }
+
+    [data-theme="dark"] .card {
+        background-color: #495057;
+        border-color: #6c757d;
+    }
+
+    [data-theme="dark"] .form-control,
+    [data-theme="dark"] .form-select {
+        background-color: #6c757d;
+        border-color: #adb5bd;
+        color: #fff;
+    }
+</style>
+
+<script>
+    // Test functions
+    async function testBasicOperations() {
+        try {
+            const response = await fetch('/TestCookieMemory/TestBasicOperations', {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': getAntiForgeryToken()
+                }
+            });
+            const result = await response.json();
+            displayResult('Basic Operations Test', result);
+        } catch (error) {
+            displayResult('Basic Operations Test', { success: false, error: error.message });
+        }
+    }
+
+    async function testUserPreferences() {
+        try {
+            const response = await fetch('/TestCookieMemory/TestUserPreferences', {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': getAntiForgeryToken()
+                }
+            });
+            const result = await response.json();
+            displayResult('User Preferences Test', result);
+        } catch (error) {
+            displayResult('User Preferences Test', { success: false, error: error.message });
+        }
+    }
+
+    async function testSearchMemory() {
+        try {
+            const response = await fetch('/TestCookieMemory/TestSearchMemory', {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': getAntiForgeryToken()
+                }
+            });
+            const result = await response.json();
+            displayResult('Search Memory Test', result);
+        } catch (error) {
+            displayResult('Search Memory Test', { success: false, error: error.message });
+        }
+    }
+
+    async function testFormAutoSave() {
+        try {
+            const response = await fetch('/TestCookieMemory/TestFormAutoSave', {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': getAntiForgeryToken()
+                }
+            });
+            const result = await response.json();
+            displayResult('Form Auto-Save Test', result);
+        } catch (error) {
+            displayResult('Form Auto-Save Test', { success: false, error: error.message });
+        }
+    }
+
+    async function testLoginMemory() {
+        try {
+            const response = await fetch('/TestCookieMemory/TestLoginMemory', {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': getAntiForgeryToken()
+                }
+            });
+            const result = await response.json();
+            displayResult('Login Memory Test', result);
+        } catch (error) {
+            displayResult('Login Memory Test', { success: false, error: error.message });
+        }
+    }
+
+    async function testCustomMemory() {
+        try {
+            const response = await fetch('/TestCookieMemory/TestCustomMemory', {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': getAntiForgeryToken()
+                }
+            });
+            const result = await response.json();
+            displayResult('Custom Memory Test', result);
+        } catch (error) {
+            displayResult('Custom Memory Test', { success: false, error: error.message });
+        }
+    }
+
+    async function getCookieInfo() {
+        try {
+            const response = await fetch('/TestCookieMemory/GetCookieInfo');
+            const result = await response.json();
+            displayResult('Cookie Information', result);
+        } catch (error) {
+            displayResult('Cookie Information', { success: false, error: error.message });
+        }
+    }
+
+    async function clearTestCookies() {
+        try {
+            const response = await fetch('/TestCookieMemory/ClearTestCookies', {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': getAntiForgeryToken()
+                }
+            });
+            const result = await response.json();
+            displayResult('Clear Test Cookies', result);
+        } catch (error) {
+            displayResult('Clear Test Cookies', { success: false, error: error.message });
+        }
+    }
+
+    // Preference functions
+    async function updateTheme() {
+        const theme = document.getElementById('theme-select').value;
+        document.body.setAttribute('data-theme', theme);
+    }
+
+    async function savePreferences() {
+        const preferences = {
+            theme: document.getElementById('theme-select').value,
+            language: document.getElementById('language-select').value,
+            pageSize: parseInt(document.getElementById('page-size-select').value)
+        };
+
+        const success = await window.cookieMemory.updateUserPreferences(preferences);
+        displayResult('Save Preferences', { success, preferences });
+    }
+
+    async function loadPreferences() {
+        const preferences = await window.cookieMemory.getUserPreferences();
+        if (preferences) {
+            document.getElementById('theme-select').value = preferences.theme || 'light';
+            document.getElementById('language-select').value = preferences.language || 'en-US';
+            document.getElementById('page-size-select').value = preferences.pageSize || 20;
+            document.body.setAttribute('data-theme', preferences.theme || 'light');
+        }
+        displayResult('Load Preferences', { success: !!preferences, preferences });
+    }
+
+    // Utility functions
+    function displayResult(testName, result) {
+        const resultsElement = document.getElementById('test-results');
+        const timestamp = new Date().toLocaleTimeString();
+        const resultText = `[${timestamp}] ${testName}:\n${JSON.stringify(result, null, 2)}\n\n`;
+        resultsElement.textContent = resultText + resultsElement.textContent;
+    }
+
+    function getAntiForgeryToken() {
+        const token = document.querySelector('input[name="__RequestVerificationToken"]');
+        return token ? token.value : '';
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize search memory
+        window.cookieMemory.initSearchMemory('#demo-search', '#demo-search-suggestions');
+        
+        // Load preferences on page load
+        loadPreferences();
+        
+        // Add some demo searches
+        setTimeout(() => {
+            window.cookieMemory.rememberSearch('demo search 1');
+            window.cookieMemory.rememberSearch('demo search 2');
+            window.cookieMemory.rememberSearch('demo search 3');
+        }, 1000);
+    });
+</script>
+
+@section Scripts {
+    <script src="~/js/cookie-memory.js"></script>
+}

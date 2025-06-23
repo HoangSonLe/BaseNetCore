@@ -188,14 +188,21 @@ namespace Infrastructure.Services
         }
 
 
-        public string GetImageAsBase64Url(string url)
+        public async Task<string> GetImageAsBase64UrlAsync(string url)
         {
             HttpClientHandler clientHandler = new HttpClientHandler();
             clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
 
             using var client = new HttpClient(clientHandler);
-            var bytes = client.GetByteArrayAsync(url).Result;
+            var bytes = await client.GetByteArrayAsync(url).ConfigureAwait(false);
             return Convert.ToBase64String(bytes);
+        }
+
+        // Keep synchronous version for backward compatibility but mark as obsolete
+        [Obsolete("Use GetImageAsBase64UrlAsync instead to avoid blocking")]
+        public string GetImageAsBase64Url(string url)
+        {
+            return GetImageAsBase64UrlAsync(url).GetAwaiter().GetResult();
         }
 
         /// <summary>

@@ -17,5 +17,20 @@ namespace Application.Extensions
         {
             return app.UseMiddleware<GlobalExceptionMiddleware>();
         }
+
+        /// <summary>
+        /// Adds all custom middleware in the correct order
+        /// </summary>
+        /// <param name="app">The application builder</param>
+        /// <param name="enablePerformanceMonitoring">Whether to enable performance monitoring</param>
+        /// <returns>The application builder for chaining</returns>
+        public static IApplicationBuilder UseCustomMiddleware(
+            this IApplicationBuilder app)
+        {
+            // Global exception handling should be early in the pipeline
+            app.UseGlobalExceptionHandling();
+
+            return app;
+        }
     }
 }

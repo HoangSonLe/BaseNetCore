@@ -10,6 +10,7 @@ using Core.CommonModels;
 using Core.CoreUtils;
 using Core.Enums;
 using Core.Helper;
+using Core.Services;
 using Infrastructure.DBContexts;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -150,6 +151,16 @@ try
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IRoleService, RoleService>();
 
+    // Cookie Memory Service
+    builder.Services.Configure<CookieMemoryOptions>(options =>
+    {
+        options.CookiePrefix = "AppMemory_";
+        options.EncryptionKey = configuration.GetSection("CookieMemory:EncryptionKey").Value ?? "DefaultKey123!";
+        options.HttpOnly = true;
+        options.Secure = builder.Environment.IsProduction();
+        options.SameSite = SameSiteMode.Lax;
+    });
+    builder.Services.AddScoped<ICookieMemoryService, CookieMemoryService>();
 
     builder.Services.AddScoped<IUserRepository, UserRepository>();
     builder.Services.AddScoped<IRoleRepository, RoleRepository>();
@@ -201,8 +212,8 @@ try
 
     // Configure the HTTP request pipeline.
 
-    // Add global exception handling middleware first
-    app.UseGlobalExceptionHandling();
+    // Add custom middleware (global exception handling)
+    app.UseCustomMiddleware();
 
     if (!app.Environment.IsDevelopment())
     {

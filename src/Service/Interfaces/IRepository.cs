@@ -11,13 +11,15 @@ namespace Application.Interfaces
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
             PagingParameters paging = null,
             string includeProperties = "",
-            Expression<Func<TEntity, T>> selector = null) where T : class;
+            Expression<Func<TEntity, T>> selector = null,
+            CancellationToken cancellationToken = default) where T : class;
 
         Task<List<TEntity>> GetAsync(
             Expression<Func<TEntity, bool>> filter = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
             PagingParameters paging = null,
-            string includeProperties = ""
+            string includeProperties = "",
+            CancellationToken cancellationToken = default
         );
 
         Task<PagedResponse<T>> GetWithPagingAsync<T>(

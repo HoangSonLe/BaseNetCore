@@ -224,8 +224,8 @@ try
     }
     // Configure the HTTP request pipeline.
 
-    // Add global exception handling middleware first
-    app.UseGlobalExceptionHandling();
+    // Add custom middleware (global exception handling)
+    app.UseCustomMiddleware();
 
     if (!app.Environment.IsDevelopment())
     {

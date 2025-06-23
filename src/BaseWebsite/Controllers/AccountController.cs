@@ -4,7 +4,10 @@ using Core.CommonModels.SecurityLogin;
 using Core.ConfigModel;
 using Core.CoreUtils;
 using Core.Enums;
+using Core.Extensions;
+using Core.Models;
 using Core.Models.ViewModels.AccountViewModels;
+using Core.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -17,8 +20,8 @@ namespace BaseWebsite.Controllers
     public class AccountController : BaseController<AccountController>
     {
         private readonly IUserService _userService;
-
         private readonly IConfiguration _configuration;
+        private readonly ICookieMemoryService _cookieMemoryService;
         //private readonly IEmailSender _emailSender; TODO
         private readonly IHttpContextAccessor _accessor;
 
@@ -28,11 +31,13 @@ namespace BaseWebsite.Controllers
             IUserService userService,
             ILogger<AccountController> logger,
             IConfiguration configuration,
+            ICookieMemoryService cookieMemoryService,
             IWebHostEnvironment webHostEnvironment
             ) : base(logger, userService)
         {
             _userService = userService;
             _configuration = configuration;
+            _cookieMemoryService = cookieMemoryService;
             //_emailSender = emailSender;
         }
 
@@ -44,7 +49,18 @@ namespace BaseWebsite.Controllers
             var username = "";
             var password = "";
             var rememberme = false;
-            if (Request.Cookies["RememberMe"] != null)
+
+            // Use new cookie memory service to get login memory
+            var loginMemory = _cookieMemoryService.GetLoginMemory();
+            if (loginMemory != null)
+            {
+                username = loginMemory.Username;
+                rememberme = loginMemory.RememberMe;
+                // Don't pre-fill password for security reasons
+            }
+
+            // Fallback to old cookie system for backward compatibility
+            if (string.IsNullOrEmpty(username) && Request.Cookies["RememberMe"] != null)
             {
                 string value = Request.Cookies["RememberMe"];
                 string[] parts = value.Split('|');
@@ -55,6 +71,7 @@ namespace BaseWebsite.Controllers
                     rememberme = true;
                 }
             }
+
             ViewBag.Username = username;
             ViewBag.Password = password;
             ViewBag.Rememberme = rememberme;
@@ -178,15 +195,31 @@ namespace BaseWebsite.Controllers
                 };
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties).ConfigureAwait(false);
+
+                // Clear old RememberMe cookie for backward compatibility
                 Response.Cookies.Delete("RememberMe");
+
+                // Use new cookie memory service for login memory
                 if (model.RememberMe == true)
                 {
-
-                    var encodePassword = Utils.EncodePassword(account.Password, EEncodeType.SHA_256);
-                    Response.Cookies.Append("RememberMe", encodePassword + "|" + account.UserName, new CookieOptions()
+                    var additionalData = new Dictionary<string, string>
                     {
-                        Expires = DateTime.Now.AddDays(30)
-                    });
+                        { "AccountType", model.AccountType.ToString() },
+                        { "IsMobile", model.IsMobile.ToString() },
+                        { "LastLoginTime", DateTime.UtcNow.ToString("O") }
+                    };
+
+                    _cookieMemoryService.SetLoginMemory(account.UserName, true, additionalData, 30);
+
+                    // Also set user preferences if this is their first login or update existing ones
+                    var userPrefs = HttpContext.GetUserPreferences(userDB.Id) ?? new UserPreferences();
+                    userPrefs.Language = "vi-VN"; // Default or get from user settings
+                    HttpContext.SetUserPreferences(userDB.Id, userPrefs);
+                }
+                else
+                {
+                    // Clear login memory if not remembering
+                    _cookieMemoryService.ClearLoginMemory();
                 }
                 #endregion
                 #region Redirect after Login
@@ -205,8 +238,24 @@ namespace BaseWebsite.Controllers
         }
         public async Task<IActionResult> Logout(string message = null)
         {
+            // Store logout information for analytics or security purposes
+            var securityData = HttpContext.GetSecurityMemory() ?? new SecurityMemoryData();
+            securityData.LastLogin = DateTime.UtcNow;
+            HttpContext.SetSecurityMemory(securityData);
+
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             Logger.LogInformation(HttpContext.User.Identity.Name + " is logout");
+
+            // Clear session-specific data but keep user preferences and login memory if RememberMe was enabled
+            var loginMemory = _cookieMemoryService.GetLoginMemory();
+            if (loginMemory?.RememberMe != true)
+            {
+                _cookieMemoryService.ClearLoginMemory();
+            }
+
+            // Clear session data
+            HttpContext.SetSessionData(new SessionData());
+
             return RedirectToAction("Login");
         }
 
@@ -290,5 +339,136 @@ namespace BaseWebsite.Controllers
         {
             await UserService.LockUser(userName);
         }
+
+        /// <summary>
+        /// Get user preferences via AJAX
+        /// </summary>
+        [HttpGet]
+        public IActionResult GetUserPreferences()
+        {
+            if (!User.Identity.IsAuthenticated)
+                return Unauthorized();
+
+            var userId = int.Parse(User.FindFirst("UserID")?.Value ?? "0");
+            var preferences = HttpContext.GetUserPreferences(userId) ?? new UserPreferences();
+
+            return Json(preferences);
+        }
+
+        /// <summary>
+        /// Update user preferences via AJAX
+        /// </summary>
+        [HttpPost]
+        public IActionResult UpdateUserPreferences([FromBody] UserPreferences preferences)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return Unauthorized();
+
+            try
+            {
+                var userId = int.Parse(User.FindFirst("UserID")?.Value ?? "0");
+                HttpContext.SetUserPreferences(userId, preferences);
+
+                return Json(new { success = true, message = "Preferences updated successfully" });
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error updating user preferences");
+                return Json(new { success = false, message = "Error updating preferences" });
+            }
+        }
+
+        /// <summary>
+        /// Remember search query
+        /// </summary>
+        [HttpPost]
+        public IActionResult RememberSearch([FromBody] string searchQuery)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return Unauthorized();
+
+            try
+            {
+                HttpContext.RememberSearch(searchQuery);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error remembering search");
+                return Json(new { success = false });
+            }
+        }
+
+        /// <summary>
+        /// Get recent searches
+        /// </summary>
+        [HttpGet]
+        public IActionResult GetRecentSearches(int count = 10)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return Unauthorized();
+
+            try
+            {
+                var searches = HttpContext.GetRecentSearches(count);
+                return Json(searches);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error getting recent searches");
+                return Json(new List<string>());
+            }
+        }
+
+        /// <summary>
+        /// Auto-save form data
+        /// </summary>
+        [HttpPost]
+        public IActionResult AutoSaveForm([FromBody] AutoSaveFormRequest request)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return Unauthorized();
+
+            try
+            {
+                HttpContext.AutoSaveForm(request.FormId, request.FormData);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error auto-saving form");
+                return Json(new { success = false });
+            }
+        }
+
+        /// <summary>
+        /// Get auto-saved form data
+        /// </summary>
+        [HttpGet]
+        public IActionResult GetAutoSavedForm(string formId)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return Unauthorized();
+
+            try
+            {
+                var formData = HttpContext.GetAutoSavedForm(formId);
+                return Json(formData ?? new Dictionary<string, string>());
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error getting auto-saved form");
+                return Json(new Dictionary<string, string>());
+            }
+        }
+    }
+
+    /// <summary>
+    /// Request model for auto-save form
+    /// </summary>
+    public class AutoSaveFormRequest
+    {
+        public string FormId { get; set; } = string.Empty;
+        public Dictionary<string, string> FormData { get; set; } = new();
     }
 }

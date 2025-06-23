@@ -129,8 +129,8 @@ namespace Application.Services.WebServices
             if (!string.IsNullOrEmpty(searchString))
             {
                 var searchStringNonUnicode = Utils.NonUnicode(searchString.Trim().ToLower());
-                predicate = predicate.And(i => i.UserName.Trim().ToLower().Contains(searchStringNonUnicode) ||
-                                                i.NameNonUnicode.Trim().ToLower().Contains(searchStringNonUnicode)
+                predicate = predicate.And(i => i.UserName.ToLower().Contains(searchStringNonUnicode) ||
+                                                i.NameNonUnicode.Contains(searchStringNonUnicode)
                                          );
             }
             var userDbList = await _userRepository.ReadOnlyRespository.GetWithPagingAsync(new PagingParameters(1, 50 - selectedUserList.Count()), predicate, i => i.OrderBy(p => p.Name));
@@ -155,9 +155,9 @@ namespace Application.Services.WebServices
                 if (!string.IsNullOrEmpty(searchModel.SearchString))
                 {
                     var searchStringNonUnicode = Utils.NonUnicode(searchModel.SearchString.Trim().ToLower());
-                    predicate = predicate.And(i => i.UserName.Trim().ToLower().Contains(searchStringNonUnicode) ||
-                                                    i.NameNonUnicode.Trim().ToLower().Contains(searchStringNonUnicode) ||
-                                                    string.IsNullOrEmpty(i.Phone) == false && i.Phone.Trim().ToLower().Contains(searchStringNonUnicode)
+                    predicate = predicate.And(i => i.UserName.ToLower().Contains(searchStringNonUnicode) ||
+                                                    i.NameNonUnicode.Contains(searchStringNonUnicode) ||
+                                                    !string.IsNullOrEmpty(i.Phone) && i.Phone.ToLower().Contains(searchStringNonUnicode)
                                              );
                 }
                 if (searchModel.RoleIdList.Count > 0)

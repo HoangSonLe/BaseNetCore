@@ -146,11 +146,11 @@ namespace Application.Repository
         {
             ArgumentNullException.ThrowIfNull(entityToDelete, nameof(entityToDelete));
             DbSet.Remove(entityToDelete);
-            return await _SaveChangesAsync();
+            return await _SaveChangesAsync().ConfigureAwait(false);
         }
         private async Task<int> _SaveChangesAsync()
         {
-            return await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync().ConfigureAwait(false);
         }
 
         #endregion
@@ -160,19 +160,20 @@ namespace Application.Repository
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
             PagingParameters paging = null,
             string includeProperties = "",
-            Expression<Func<TEntity, T>> selector = null) where T : class
+            Expression<Func<TEntity, T>> selector = null,
+            CancellationToken cancellationToken = default) where T : class
         {
             var query = _Get(filter, orderBy, includeProperties, paging).QueryPaging;
 
             if (selector == null && typeof(T) == typeof(TEntity))
             {
                 // If no selector and T is TEntity, return list of TEntity
-                return await query.Cast<T>().ToListAsync();
+                return await query.Cast<T>().ToListAsync(cancellationToken).ConfigureAwait(false);
             }
             else if (selector != null)
             {
                 // If selector is provided, use it to transform to type T
-                return await query.Select(selector).ToListAsync();
+                return await query.Select(selector).ToListAsync(cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -185,9 +186,10 @@ namespace Application.Repository
             Expression<Func<TEntity, bool>> filter = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
             PagingParameters paging = null,
-            string includeProperties = "")
+            string includeProperties = "",
+            CancellationToken cancellationToken = default)
         {
-            return await GetAsync<TEntity>(filter, orderBy, paging, includeProperties);
+            return await GetAsync<TEntity>(filter, orderBy, paging, includeProperties, null, cancellationToken).ConfigureAwait(false);
         }
         public async Task<PagedResponse<T>> GetWithPagingAsync<T>(
             PagingParameters paging,
@@ -202,16 +204,16 @@ namespace Application.Repository
             {
                 // If no selector and T is TEntity, return list of TEntity
                 var query = _Get(filter, orderBy, includeProperties, paging);
-                var totalRecords = await query.QueryNoPaging.CountAsync();
-                var data = await query.QueryPaging.ToListAsync();
+                var totalRecords = await query.QueryNoPaging.CountAsync().ConfigureAwait(false);
+                var data = await query.QueryPaging.ToListAsync().ConfigureAwait(false);
                 return new PagedResponse<T>(data.Cast<T>().ToList(), paging.PageNumber, paging.PageSize, totalRecords);
             }
             else if (selector != null)
             {
                 // If selector is provided, use it to transform to type T
                 var query = _Get(selector, filter, orderBy, includeProperties, paging);
-                var totalRecords = await query.QueryNoPaging.CountAsync();
-                var data = await query.QueryPaging.ToListAsync();
+                var totalRecords = await query.QueryNoPaging.CountAsync().ConfigureAwait(false);
+                var data = await query.QueryPaging.ToListAsync().ConfigureAwait(false);
                 return new PagedResponse<T>(data, paging.PageNumber, paging.PageSize, totalRecords);
             }
             else
@@ -233,7 +235,7 @@ namespace Application.Repository
         public async Task<TEntity> FindAsync(object id)
         {
             ArgumentNullException.ThrowIfNull(id, nameof(id));
-            return await DbSet.FindAsync(id);
+            return await DbSet.FindAsync(id).ConfigureAwait(false);
         }
         public async Task<T> FirstOrDefaultAsync<T>(
             Expression<Func<TEntity, bool>> predicate,
@@ -254,12 +256,12 @@ namespace Application.Repository
             if (selector == null && typeof(T) == typeof(TEntity))
             {
                 // If no selector and T is TEntity, return entity directly
-                return await query.FirstOrDefaultAsync() as T;
+                return await query.FirstOrDefaultAsync().ConfigureAwait(false) as T;
             }
             else if (selector != null)
             {
                 // If selector is provided, use it to transform to type T
-                return await query.Select(selector).FirstOrDefaultAsync();
+                return await query.Select(selector).FirstOrDefaultAsync().ConfigureAwait(false);
             }
             else
             {
@@ -285,13 +287,13 @@ namespace Application.Repository
                 throw new ArgumentNullException(nameof(orderBy), "Order By cannot be null for LastOrDefaultAsync");
             }
 
-            return await orderBy(query).LastOrDefaultAsync();
+            return await orderBy(query).LastOrDefaultAsync().ConfigureAwait(false);
         }
         public async Task<int> AddAsync(TEntity entity)
         {
             ArgumentNullException.ThrowIfNull(entity, nameof(entity));
-            await DbSet.AddAsync(entity);
-            return await _SaveChangesAsync();
+            await DbSet.AddAsync(entity).ConfigureAwait(false);
+            return await _SaveChangesAsync().ConfigureAwait(false);
         }
         public async Task<int> AddRangeAsync(List<TEntity> entity)
         {
@@ -299,15 +301,15 @@ namespace Application.Repository
             if (entity.Count == 0)
                 throw new ArgumentException("Entity list cannot be empty", nameof(entity));
 
-            await DbSet.AddRangeAsync(entity);
-            return await _SaveChangesAsync();
+            await DbSet.AddRangeAsync(entity).ConfigureAwait(false);
+            return await _SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task<int> UpdateAsync(TEntity entityToUpdate)
         {
             ArgumentNullException.ThrowIfNull(entityToUpdate, nameof(entityToUpdate));
             _context.Entry(entityToUpdate).State = EntityState.Modified;
-            return await _SaveChangesAsync();
+            return await _SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task<int> UpdateRangeAsync(List<TEntity> entity)
@@ -317,18 +319,18 @@ namespace Application.Repository
                 throw new ArgumentException("Entity list cannot be empty", nameof(entity));
 
             DbSet.UpdateRange(entity);
-            return await _SaveChangesAsync();
+            return await _SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task<int> DeleteAsync(object id)
         {
             ArgumentNullException.ThrowIfNull(id, nameof(id));
-            var entity = await FindAsync(id);
+            var entity = await FindAsync(id).ConfigureAwait(false);
             if (entity != null)
             {
                 DbSet.Remove(entity);
             }
-            return await _SaveChangesAsync();
+            return await _SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task<int> DeleteAsync(Expression<Func<TEntity, bool>> filter)
@@ -348,14 +350,14 @@ namespace Application.Repository
                 return 0;
 
             DbSet.RemoveRange(entityToDelete);
-            return await _SaveChangesAsync();
+            return await _SaveChangesAsync().ConfigureAwait(false);
         }
 
         // Transaction-friendly methods (don't auto-save)
         public async Task AddWithoutSaveAsync(TEntity entity)
         {
             ArgumentNullException.ThrowIfNull(entity, nameof(entity));
-            await DbSet.AddAsync(entity);
+            await DbSet.AddAsync(entity).ConfigureAwait(false);
         }
 
         public async Task AddRangeWithoutSaveAsync(List<TEntity> entity)
@@ -399,7 +401,7 @@ namespace Application.Repository
 
         public async Task<int> SaveChangesAsync()
         {
-            return await _SaveChangesAsync();
+            return await _SaveChangesAsync().ConfigureAwait(false);
         }
         #endregion
 
