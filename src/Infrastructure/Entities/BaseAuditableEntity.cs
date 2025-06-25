@@ -1,6 +1,6 @@
 ﻿using Core.Enums;
 
-namespace Infrastructure.Entitites
+namespace Infrastructure.Entities
 {
     public abstract class BaseAuditableEntity
     {

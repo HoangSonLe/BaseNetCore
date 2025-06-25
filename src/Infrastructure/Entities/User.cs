@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Infrastructure.Entitites
+namespace Infrastructure.Entities
 {
     public class User : BaseAuditableEntity
     {

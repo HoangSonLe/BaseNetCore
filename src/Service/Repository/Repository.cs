@@ -9,7 +9,7 @@ namespace Application.Repository
     public interface IRepositoryGenerator<TEntity> where TEntity : class
     {
         public Repository<TEntity> Repository { get; }
-        public RespositoryAsNoTracking<TEntity> ReadOnlyRespository { get; }
+        public RepositoryAsNoTracking<TEntity> ReadOnlyRepository { get; }
 
     }
     public class RepositoryGenerator<TEntity> : IRepositoryGenerator<TEntity> where TEntity : class
@@ -17,23 +17,23 @@ namespace Application.Repository
         private DbContext _dbContext;
         private DbContext _dbReadOnlyContext;
         private readonly Repository<TEntity> _Repository;
-        private readonly RespositoryAsNoTracking<TEntity> _ReadOnlyRespository;
+        private readonly RepositoryAsNoTracking<TEntity> _ReadOnlyRepository;
 
         public RepositoryGenerator(DbContext dbContext, DbContext dBReadOnlyContext)
         {
             _dbContext = dbContext;
             _dbReadOnlyContext = dBReadOnlyContext;
             _Repository = new Repository<TEntity>(_dbContext);
-            _ReadOnlyRespository = new RespositoryAsNoTracking<TEntity>(_dbReadOnlyContext);
+            _ReadOnlyRepository = new RepositoryAsNoTracking<TEntity>(_dbReadOnlyContext);
         }
         public Repository<TEntity> Repository => _Repository;
-        public RespositoryAsNoTracking<TEntity> ReadOnlyRespository => _ReadOnlyRespository;
+        public RepositoryAsNoTracking<TEntity> ReadOnlyRepository => _ReadOnlyRepository;
     }
 
 
-    public class RespositoryAsNoTracking<TEntity> : Repository<TEntity> where TEntity : class
+    public class RepositoryAsNoTracking<TEntity> : Repository<TEntity> where TEntity : class
     {
-        public RespositoryAsNoTracking(DbContext context) : base(context)
+        public RepositoryAsNoTracking(DbContext context) : base(context)
         {
             _dbSet = DbSet.AsNoTracking();
         }

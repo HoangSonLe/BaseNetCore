@@ -3,7 +3,7 @@ using Application.Services.WebInterfaces;
 using Core.CommonModels;
 using Core.CommonModels.BaseModels;
 using Core.CoreUtils;
-using Infrastructure.Entitites;
+using Infrastructure.Entities;
 using LinqKit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;

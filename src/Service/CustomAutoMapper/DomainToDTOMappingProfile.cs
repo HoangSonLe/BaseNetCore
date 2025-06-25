@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Core.Models.ViewModels;
-using Infrastructure.Entitites;
+using Infrastructure.Entities;
 
 namespace Application.CustomAutoMapper
 {

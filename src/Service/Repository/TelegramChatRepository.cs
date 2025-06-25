@@ -1,6 +1,6 @@
 ﻿using Application.Interfaces;
 using Infrastructure.DBContexts;
-using Infrastructure.Entitites;
+using Infrastructure.Entities;
 
 namespace Application.Repository
 {

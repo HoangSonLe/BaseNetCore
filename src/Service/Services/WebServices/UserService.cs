@@ -10,7 +10,7 @@ using Core.Enums;
 using Core.Models.SearchModels;
 using Core.Models.ViewModels;
 using Core.Models.ViewModels.AccountViewModels;
-using Infrastructure.Entitites;
+using Infrastructure.Entities;
 using LinqKit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -41,8 +41,8 @@ namespace Application.Services.WebServices
         {
             var response = new Acknowledgement<User>();
 
-            var hashPassword = Utils.EncodePassword(password, EEncodeType.SHA_256);
-            //var userDB = (await _userRepository.ReadOnlyRespository.GetAsync(u => u.UserName.ToLower() == userName.ToLower() && u.State == (short)EState.Active)).FirstOrDefault();
+            var hashPassword = Utils.EncodePassword(password, EEncodeType.Sha256);
+            //var userDB = (await _userRepository.ReadOnlyRepository.GetAsync(u => u.UserName.ToLower() == userName.ToLower() && u.State == (short)EState.Active)).FirstOrDefault();
 
 
             //if (userDB == null)
@@ -124,7 +124,7 @@ namespace Application.Services.WebServices
             {
                 var tmpPredicate = PredicateBuilder.New<User>(predicate);
                 tmpPredicate = tmpPredicate.And(i => selectedIdList.Contains(i.Id));
-                selectedUserList = (await _userRepository.ReadOnlyRespository.GetAsync(tmpPredicate, i => i.OrderBy(p => p.Name))).ToList();
+                selectedUserList = (await _userRepository.ReadOnlyRepository.GetAsync(tmpPredicate, i => i.OrderBy(p => p.Name))).ToList();
             }
             if (!string.IsNullOrEmpty(searchString))
             {
@@ -133,7 +133,7 @@ namespace Application.Services.WebServices
                                                 i.NameNonUnicode.Contains(searchStringNonUnicode)
                                          );
             }
-            var userDbList = await _userRepository.ReadOnlyRespository.GetWithPagingAsync(new PagingParameters(1, 50 - selectedUserList.Count()), predicate, i => i.OrderBy(p => p.Name));
+            var userDbList = await _userRepository.ReadOnlyRepository.GetWithPagingAsync(new PagingParameters(1, 50 - selectedUserList.Count()), predicate, i => i.OrderBy(p => p.Name));
             var data = userDbList.Data.Concat(selectedUserList).Select(i => new KendoDropdownListModel<int>()
             {
                 Value = i.Id.ToString(),
@@ -167,15 +167,15 @@ namespace Application.Services.WebServices
 
                 var userList = new List<UserViewModel>();
                 predicate = UserAuthorPredicate.GetUserAuthorPredicate(predicate, CurrentUserRoles.ToList(), CurrentUserId);
-                var userDbQuery = await _userRepository.ReadOnlyRespository.GetWithPagingAsync(
+                var userDbQuery = await _userRepository.ReadOnlyRepository.GetWithPagingAsync(
                     new PagingParameters(searchModel.PageNumber, searchModel.PageSize),
                     predicate,
                     i => i.OrderByDescending(u => u.UpdatedDate)
                     );
                 var userDBList = _mapper.Map<List<UserViewModel>>(userDbQuery.Data);
-                var roleDBList = await _roleRepository.ReadOnlyRespository.GetAsync();
+                var roleDBList = await _roleRepository.ReadOnlyRepository.GetAsync();
                 var updateByUserIdList = userDBList.Select(i => i.UpdatedBy).ToList();
-                var updateByUserList = await _userRepository.ReadOnlyRespository.GetAsync(i => updateByUserIdList.Contains(i.Id));
+                var updateByUserList = await _userRepository.ReadOnlyRepository.GetAsync(i => updateByUserIdList.Contains(i.Id));
                 foreach (var user in userDBList)
                 {
                     var roles = roleDBList.Where(j => user.RoleIdList.Contains(j.Id)).ToList();
@@ -314,7 +314,7 @@ namespace Application.Services.WebServices
                 ack.AddMessage("Lỗi thiếu setting mật khẩu mặc định");
                 return ack;
             }
-            user.Password = Utils.EncodePassword(defaultResetPassword, EEncodeType.SHA_256);
+            user.Password = Utils.EncodePassword(defaultResetPassword, EEncodeType.Sha256);
             await ack.TrySaveChangesAsync(res => res.UpdateAsync(user), _userRepository.Repository);
             return ack;
         }
@@ -324,7 +324,7 @@ namespace Application.Services.WebServices
             var ack = new Acknowledgement<UserViewModel>();
             try
             {
-                var user = await _userRepository.ReadOnlyRespository.FindAsync(userId);
+                var user = await _userRepository.ReadOnlyRepository.FindAsync(userId);
                 if (user == null)
                 {
                     ack.StatusCode = HttpStatusCode.BadRequest;
@@ -339,7 +339,7 @@ namespace Application.Services.WebServices
                     var predicate = PredicateBuilder.New<Role>(i => i.State == (int)EState.Active);
                     predicate = predicate.And(e => user.RoleIdList.Contains(e.Id));
 
-                    var listRole = await _roleRepository.ReadOnlyRespository.GetAsync(predicate);
+                    var listRole = await _roleRepository.ReadOnlyRepository.GetAsync(predicate);
                     if (listRole != null)
                     {
                         var listPermission = new List<int>();
@@ -374,8 +374,8 @@ namespace Application.Services.WebServices
             }
             #endregion
 
-            postData.OldPassword = Utils.EncodePassword(postData.OldPassword, EEncodeType.SHA_256);
-            postData.NewPassword = Utils.EncodePassword(postData.NewPassword, EEncodeType.SHA_256);
+            postData.OldPassword = Utils.EncodePassword(postData.OldPassword, EEncodeType.Sha256);
+            postData.NewPassword = Utils.EncodePassword(postData.NewPassword, EEncodeType.Sha256);
             var user = await _userRepository.Repository.FirstOrDefaultAsync(i => i.Id == CurrentUserId);
             if (user == null)
             {
@@ -407,7 +407,7 @@ namespace Application.Services.WebServices
                 if (IsAuthenticated)
                 {
                     // Optionally get user details
-                    var user = await _userRepository.ReadOnlyRespository.FindAsync(CurrentUserId);
+                    var user = await _userRepository.ReadOnlyRepository.FindAsync(CurrentUserId);
 
                     ack.Data = new
                     {

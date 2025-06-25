@@ -30,7 +30,7 @@ try
     var builder = WebApplication.CreateBuilder(args);
     #region DATABASE
     ConfigurationManager configuration = builder.Configuration;
-    var connectionString = configuration.GetConnectionString("SAMPLEDB");
+    var connectionString = configuration.GetConnectionString("DefaultConnection");
     builder.Services.AddDbContext<SampleDBContext>(options => options.UseNpgsql(connectionString));
     builder.Services.AddDbContext<SampleReadOnlyDBContext>(options => options.UseNpgsql(connectionString));
     #endregion

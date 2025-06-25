@@ -1,18 +1,18 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace BaseWebsite.Authorizations
+namespace BaseWebsite.Authorization
 {
-    public class C3FunctionAuthorizationHandler : AuthorizationHandler<C3FunctionAuthorizationRequirement>
+    public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionAuthorizationRequirement>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public C3FunctionAuthorizationHandler(IHttpContextAccessor httpContextAccessor, IWebHostEnvironment webHostEnvironment)
+        public PermissionAuthorizationHandler(IHttpContextAccessor httpContextAccessor, IWebHostEnvironment webHostEnvironment)
         {
             _httpContextAccessor = httpContextAccessor;
             _webHostEnvironment = webHostEnvironment;
         }
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, C3FunctionAuthorizationRequirement requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionAuthorizationRequirement requirement)
         {
             bool Succeed = false;
             var claim = context.User.FindFirst("Actions");

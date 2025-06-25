@@ -149,7 +149,7 @@ namespace BaseWebsite.Controllers
                 RemoveLoginFailedTimesCookies();
                 #endregion
                 // check if password is correct
-                model.Password = Utils.EncodePassword(model.Password, EEncodeType.SHA_256);
+                model.Password = Utils.EncodePassword(model.Password, EEncodeType.Sha256);
                 if (!model.Password.Equals(userDB.Password))
                 {
                     loginFailedTimes++;
@@ -165,7 +165,7 @@ namespace BaseWebsite.Controllers
                     return View(model);
                 }
 
-                #region Claims and set Cookies 
+                #region Claims and set Cookies
                 // Create the identity from the user info
                 var claims = new List<Claim>
                 {

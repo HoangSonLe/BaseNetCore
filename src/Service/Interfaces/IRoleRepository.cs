@@ -1,5 +1,5 @@
 ﻿using Application.Repository;
-using Infrastructure.Entitites;
+using Infrastructure.Entities;
 
 namespace Application.Interfaces
 {

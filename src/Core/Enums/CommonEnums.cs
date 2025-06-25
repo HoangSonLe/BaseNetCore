@@ -1,13 +1,13 @@
 ﻿namespace Core.Enums
 {
-    /// Rule for naming : E + Noun  
+    /// Rule for naming : E + PascalCase
 
     /// <summary>
     /// Encode password type
     /// </summary>
     public enum EEncodeType
     {
-        SHA_256
+        Sha256
     }
     /// <summary>
     /// State of row of database

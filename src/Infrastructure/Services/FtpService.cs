@@ -20,8 +20,8 @@ namespace Infrastructure.Services
             _configuration = configuration;
             _logger = logger;
 
-            userNameFTP = Utils.DecodePassword(_configuration.GetSection("FTP:UserName").Value, EEncodeType.SHA_256);
-            passwordFTP = Utils.DecodePassword(_configuration.GetSection("FTP:Password").Value, EEncodeType.SHA_256);
+            userNameFTP = Utils.DecodePassword(_configuration.GetSection("FTP:UserName").Value, EEncodeType.Sha256);
+            passwordFTP = Utils.DecodePassword(_configuration.GetSection("FTP:Password").Value, EEncodeType.Sha256);
             hostFTP = _configuration.GetSection("FTP:Host").Value;
             portFTP = _configuration.GetSection("FTP:Port").Value;
         }

@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
-namespace BaseWebsite.Authorizations
+namespace BaseWebsite.Authorization
 {
-    public class C3FunctionAuthorizationPolicyProvider : IAuthorizationPolicyProvider
+    public class PermissionAuthorizationPolicyProvider : IAuthorizationPolicyProvider
     {
         const string POLICY_PREFIX = "UserFunction";
         public DefaultAuthorizationPolicyProvider defaultPolicyProvider { get; }
-        public C3FunctionAuthorizationPolicyProvider(IOptions<AuthorizationOptions> options)
+        public PermissionAuthorizationPolicyProvider(IOptions<AuthorizationOptions> options)
         {
             defaultPolicyProvider = new DefaultAuthorizationPolicyProvider(options);
         }
@@ -27,7 +27,7 @@ namespace BaseWebsite.Authorizations
             {
                 var functionID = policyName.Substring(POLICY_PREFIX.Length);
                 var policy = new AuthorizationPolicyBuilder(CookieAuthenticationDefaults.AuthenticationScheme);
-                policy.AddRequirements(new C3FunctionAuthorizationRequirement(permission));
+                policy.AddRequirements(new PermissionAuthorizationRequirement(permission));
                 return Task.FromResult(policy.Build());
             }
 

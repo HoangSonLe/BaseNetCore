@@ -1,10 +1,11 @@
 using Application.CustomAutoMapper;
+using Application.Extensions;
 using Application.Interfaces;
 using Application.Repository;
 using Application.Services.WebInterfaces;
 using Application.Services.WebServices;
 using AutoMapper;
-using BaseWebsite.Authorizations;
+using BaseWebsite.Authorization;
 using BaseWebsite.BackgroundServices;
 using Core.CommonModels;
 using Core.CoreUtils;
@@ -25,14 +26,13 @@ using System.IO.Compression;
 using System.Reflection;
 using System.Text;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
-using Application.Extensions;
 
 var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
 
 try
 {
     var builder = WebApplication.CreateBuilder(args);
-    var tokenSecretKey = Utils.DecodePassword(builder.Configuration.GetSection("JWT:SecretKey").Value, EEncodeType.SHA_256);
+    var tokenSecretKey = Utils.DecodePassword(builder.Configuration.GetSection("JWT:SecretKey").Value, EEncodeType.Sha256);
 
     ConfigurationManager configuration = builder.Configuration;
 
@@ -59,7 +59,7 @@ try
 
     builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-    var connectionString = configuration.GetConnectionString("QLLCDB");
+    var connectionString = configuration.GetConnectionString("DefaultConnection");
     var CookieName_ = configuration.GetSection("Path:AuthCookie_").Value;
     builder.Services.AddDbContext<SampleDBContext>(options => options.UseNpgsql(connectionString));
     builder.Services.AddDbContext<SampleReadOnlyDBContext>(options => options.UseNpgsql(connectionString));
@@ -67,8 +67,8 @@ try
     //var appConfig = builder.Configuration.GetSection("Path").Get<ApplicationConfiguration>();
     //builder.Services.AddSingleton<IApplicationConfiguration, ApplicationConfiguration>(e => appConfig);
     #region SETTING AUTHEN & AUTHOR
-    builder.Services.AddSingleton<IAuthorizationPolicyProvider, C3FunctionAuthorizationPolicyProvider>();
-    builder.Services.AddSingleton<IAuthorizationHandler, C3FunctionAuthorizationHandler>();
+    builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
+    builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
     builder.Services.AddAuthentication(cfg =>
     {
         cfg.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;

@@ -8,12 +8,12 @@ namespace Core.Enums
     public enum EKendoNotificationType
     {
         [Description("info")]
-        INFO,
+        Info,
         [Description("success")]
-        SUCCESS,
+        Success,
         [Description("warning")]
-        WARNING,
+        Warning,
         [Description("error")]
-        ERROR
+        Error
     }
 }

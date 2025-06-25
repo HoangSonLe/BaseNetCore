@@ -1,5 +1,5 @@
 ﻿using Core.Enums;
-using Infrastructure.Entitites;
+using Infrastructure.Entities;
 using Infrastructure.EntityTypeConfiguration;
 using Microsoft.EntityFrameworkCore;
 

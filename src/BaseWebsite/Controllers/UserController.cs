@@ -1,6 +1,6 @@
 ﻿using Application.Base;
 using Application.Services.WebInterfaces;
-using BaseWebsite.Authorizations;
+using BaseWebsite.Authorization;
 using Core.CommonModels.BaseModels;
 using Core.Enums;
 using Core.Helper;
@@ -20,7 +20,7 @@ namespace BaseWebsite.Controllers
         {
         }
 
-        [C3FunctionAuthorization(true, functionIdList: [(int)EActionRole.READ_USER])]
+        [PermissionAuthorization(true, functionIdList: [(int)EActionRole.ReadUser])]
         public IActionResult Index()
         {
             ViewBag.RoleDatasource = EnumHelper.ToDropdownList<ERoleType>();
@@ -43,7 +43,7 @@ namespace BaseWebsite.Controllers
             var result = await UserService.GetUserDataDropdownList(searchString, selectedIds ?? new List<int>());
             return MapToIActionResult(result);
         }
-        [C3FunctionAuthorization(true, functionIdList: [(int)EActionRole.READ_USER])]
+        [PermissionAuthorization(true, functionIdList: [(int)EActionRole.ReadUser])]
         [HttpPost]
         public async Task<IActionResult> GetUserList(UserSearchModel searchModel)
         {
@@ -51,19 +51,19 @@ namespace BaseWebsite.Controllers
             var result = await UserService.GetUserList(searchModel);
             return MapToIActionResult(result);
         }
-        [C3FunctionAuthorization(true, functionIdList: [(int)EActionRole.DELETE_USER])]
+        [PermissionAuthorization(true, functionIdList: [(int)EActionRole.DeleteUser])]
         [HttpGet]
         public async Task<Acknowledgement> DeleteUserById(int userId)
         {
             return await UserService.DeleteUserById(userId);
         }
-        [C3FunctionAuthorization(true, functionIdList: [(int)EActionRole.UPDATE_USER])]
+        [PermissionAuthorization(true, functionIdList: [(int)EActionRole.UpdateUser])]
         [HttpGet]
         public async Task<Acknowledgement> ResetUserPasswordById(int userId)
         {
             return await UserService.ResetUserPasswordById(userId);
         }
-        [C3FunctionAuthorization(true, functionIdList: [(int)EActionRole.CREATE_USER, (int)EActionRole.UPDATE_USER])]
+        [PermissionAuthorization(true, functionIdList: [(int)EActionRole.CreateUser, (int)EActionRole.UpdateUser])]
         [HttpPost]
         public async Task<Acknowledgement> CreateOrUpdateUser([FromBody] UserViewModel postData)
         {
@@ -74,7 +74,7 @@ namespace BaseWebsite.Controllers
         {
             return await UserService.ChangePassword(postData);
         }
-        [C3FunctionAuthorization(true, functionIdList: [(int)EActionRole.READ_USER, (int)EActionRole.UPDATE_USER])]
+        [PermissionAuthorization(true, functionIdList: [(int)EActionRole.ReadUser, (int)EActionRole.UpdateUser])]
         [HttpGet]
         public async Task<Acknowledgement<UserViewModel>> GetUserById(int userId)
         {

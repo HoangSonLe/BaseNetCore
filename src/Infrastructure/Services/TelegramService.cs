@@ -4,7 +4,7 @@ using Core.CommonModels.BaseModels;
 using Core.CoreUtils;
 using Core.Enums;
 using Infrastructure.DBContexts;
-using Infrastructure.Entitites;
+using Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

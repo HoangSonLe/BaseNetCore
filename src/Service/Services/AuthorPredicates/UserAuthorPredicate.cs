@@ -1,5 +1,5 @@
 ﻿using Core.Enums;
-using Infrastructure.Entitites;
+using Infrastructure.Entities;
 using LinqKit;
 using System.Linq.Expressions;
 

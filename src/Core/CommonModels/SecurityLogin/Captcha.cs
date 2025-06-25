@@ -16,7 +16,7 @@ namespace Core.CommonModels.SecurityLogin
 
         public void SaveCaptcha(string code, HttpResponse Response)
         {
-            code = Utils.EncodePassword(code, EEncodeType.SHA_256);
+            code = Utils.EncodePassword(code, EEncodeType.Sha256);
             RemoveCaptcha(Response);
             Response.Cookies.Append(CaptchaCookieName, code, new CookieOptions()
             {
@@ -34,7 +34,7 @@ namespace Core.CommonModels.SecurityLogin
                 return false;
 
             string captchaCode = Request.Cookies[CaptchaCookieName];
-            var isValid = Utils.EncodePassword(userInputCaptcha, EEncodeType.SHA_256) == captchaCode;
+            var isValid = Utils.EncodePassword(userInputCaptcha, EEncodeType.Sha256) == captchaCode;
             RemoveCaptcha(Response);
             return isValid;
         }

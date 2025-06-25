@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Infrastructure.Entitites
+namespace Infrastructure.Entities
 {
     public class TelegramChat : BaseAuditableEntity
     {

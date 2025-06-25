@@ -2,7 +2,7 @@
 
 namespace Core.Enums
 {
-    /// Rule for naming : E + Noun  
+    /// Rule for naming : E + PascalCase
 
     /// <summary>
     /// Define enums for specific models
@@ -33,45 +33,44 @@ namespace Core.Enums
     }
     public enum EActionRole
     {
-        CRUD_TENANT = 1,
+        CrudTenant = 1,
 
-        CREATE_URN,
-        READ_URN,
-        UPDATE_URN,
-        DELETE_URN,
+        CreateUrn,
+        ReadUrn,
+        UpdateUrn,
+        DeleteUrn,
 
-        CREATE_USER,
-        READ_USER,
-        UPDATE_USER,
-        DELETE_USER,
+        CreateUser,
+        ReadUser,
+        UpdateUser,
+        DeleteUser,
 
-        CREATE_TENT,
-        READ_TENT,
-        UPDATE_TENT,
-        DELETE_TENT,
+        CreateTent,
+        ReadTent,
+        UpdateTent,
+        DeleteTent,
 
-        READ_CONFIG,
-        UPDATE_CONFIG,
+        ReadConfig,
+        UpdateConfig,
 
-        CREATE_STORAGE,
-        READ_STORAGE,
-        UPDATE_STORAGE,
-        DELETE_STORAGE,
+        CreateStorage,
+        ReadStorage,
+        UpdateStorage,
+        DeleteStorage,
 
-
-        CREATE_REMINDER,
-        READ_REMINDER,
-        UPDATE_REMINDER,
-        DELETE_REMINDER,
+        CreateReminder,
+        ReadReminder,
+        UpdateReminder,
+        DeleteReminder,
     }
     public enum EGender
     {
         [Description("Không xác định")]
-        UNDEFINE,
+        Undefined,
         [Description("Nam")]
-        MALE,
+        Male,
         [Description("Nữ")]
-        FAMALE
+        Female
     }
     public enum EUrnType
     {
@@ -83,7 +82,7 @@ namespace Core.Enums
     public enum ETelegramNotiType
     {
         [Description("Không xác định")]
-        UNDEFINE,
+        Undefined,
         [Description("Gửi thông báo giỗ")]
         Anniversary,
         [Description("Gửi thông báo hạn ký gửi")]

@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 namespace Core.CoreUtils
 {
     /// <summary>
-    /// Class provide common APIs that are relate to orders. 
+    /// Class provide common APIs that are relate to orders.
     /// </summary>
     public static class Utils
     {
@@ -247,7 +247,7 @@ namespace Core.CoreUtils
 
         public static string convertVietNameseText(string input)
         {
-            // dấu unicode tổ hợp regex 
+            // dấu unicode tổ hợp regex
             if (!Regex.Match(input, @"[̣́̀̉̃]").Success)
                 return input;
             for (int i = 0; i < unicodeToHop.Length; i++)
@@ -322,7 +322,7 @@ namespace Core.CoreUtils
         public static string EncodePassword(string pass, string encodeType)
         {
             if (string.IsNullOrEmpty(encodeType) || encodeType.ToLower() == "sha256")
-                return EncodePassword(pass, EEncodeType.SHA_256);
+                return EncodePassword(pass, EEncodeType.Sha256);
 
             return "encode type " + encodeType + " not support";
         }
@@ -330,7 +330,7 @@ namespace Core.CoreUtils
         public static string DecodePassword(string pass, string encodeType)
         {
             if (string.IsNullOrEmpty(encodeType) || encodeType.ToLower() == "sha256")
-                return DecodePassword(pass, EEncodeType.SHA_256);
+                return DecodePassword(pass, EEncodeType.Sha256);
 
             return "encode type " + encodeType + " not support";
         }
@@ -339,7 +339,7 @@ namespace Core.CoreUtils
         {
             switch (encodeType)
             {
-                case EEncodeType.SHA_256:
+                case EEncodeType.Sha256:
                     return EncryptPassSHA256(pass);
                 default:
                     return "encode type " + encodeType.ToString() + " not support";
@@ -350,7 +350,7 @@ namespace Core.CoreUtils
         {
             switch (encodeType)
             {
-                case EEncodeType.SHA_256:
+                case EEncodeType.Sha256:
                     return DecryptPassSHA256(encodePass);
                 default:
                     return "encode type " + encodeType.ToString() + " not support";

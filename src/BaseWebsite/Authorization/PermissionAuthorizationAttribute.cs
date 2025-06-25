@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 
-namespace BaseWebsite.Authorizations
+namespace BaseWebsite.Authorization
 {
-    public class C3FunctionAuthorizationAttribute : AuthorizeAttribute
+    public class PermissionAuthorizationAttribute : AuthorizeAttribute
     {
-        public C3FunctionAuthorizationAttribute(bool redirect = false, params int[] functionIdList)
+        public PermissionAuthorizationAttribute(bool redirect = false, params int[] functionIdList)
         {
             PermissionId = new()
             {
